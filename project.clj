@@ -1,4 +1,4 @@
-(defproject tesis "0.1.0-SNAPSHOT"
+(defproject Mentat "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :source-paths ["src/main/clojure"]

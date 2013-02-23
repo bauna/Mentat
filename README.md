@@ -1,4 +1,4 @@
-# tesis
+# Mentat
 
 A Clojure library designed to generate a Enableness Graphs of annotated Java Class.
 

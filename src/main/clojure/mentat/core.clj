@@ -1,4 +1,4 @@
-(ns tesis.core
+(ns mentat.core
   (:require [clojure.reflect :as r])
   (:import (java.lang.reflect Method Modifier) 
            (ar.com.maba.tesis.preconditions Pre)))

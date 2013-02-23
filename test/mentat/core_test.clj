@@ -1,6 +1,6 @@
-(ns tesis.core-test
+(ns mentat.core-test
   (:use clojure.test
-        tesis.core))
+        mentat.core))
 
 (deftest a-test
   (testing "FIXME, I fail."
