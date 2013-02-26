@@ -50,7 +50,7 @@
 (defn get-field-values
   [o fields]
   "creates a map where key are field names and key are the field values"
-  ((reduce {} #(assoc %1 (keyword (.getName %2)) (.get %2 o)) fields)))
+  (reduce #(assoc %1 (keyword (.getName %2)) (.get %2 o)) {} fields))
 
 (defn pre->fn
   "convert a @Pre.value into a function"
