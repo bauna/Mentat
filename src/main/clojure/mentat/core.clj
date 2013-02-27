@@ -55,7 +55,7 @@
 (defn pre->fn
   "convert a @Pre.value into a function"
   [pre]
-  (eval (binding [*read-eval* false] (read-string (str "(fn [x] " pre ")")))))
+  (eval (binding [*read-eval* false] (read-string (str "(fn [vs] " pre ")")))))
 
 (defn method-info
   [^Method m]
