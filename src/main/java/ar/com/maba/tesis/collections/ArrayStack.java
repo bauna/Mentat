@@ -17,7 +17,7 @@ public class ArrayStack<T> implements Stack<T> {
      * @see ar.com.maba.tesis.collections.Stack#push(T)
      */
     @Override
-    @Pre("true")
+    @Pre("(> (:limit vs) (count (:stack vs)))")
     public void push(T o) {
         if (limit == stack.size()) {
             throw new IllegalStateException("Limit reached");
@@ -29,7 +29,7 @@ public class ArrayStack<T> implements Stack<T> {
      * @see ar.com.maba.tesis.collections.Stack#pop()
      */
     @Override
-    @Pre("true")
+    @Pre("(not (empty? (:stack vs)))")
     public T pop() {
         if (stack.isEmpty()) {
             throw new IllegalStateException("Stack is empty");
