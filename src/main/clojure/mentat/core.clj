@@ -78,3 +78,8 @@
     instance 
     method-str 
     (to-array args)))
+
+(defn eval-pre
+  ""
+  [value-map method-infos]
+  (map #(apply (:pre %) [value-map]) method-infos))
