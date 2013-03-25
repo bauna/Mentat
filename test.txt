@@ -1,0 +1,9 @@
+(import '(ar.com.maba.tesis.collections ArrayStack))
+(def a (ArrayStack. 10))
+(require '[mentat.core :as t])
+(def fs (t/get-all-fields (class a)))
+(def vs (t/get-field-values a fs))
+(def ms (t/public-methods a))
+(def mis (t/all-method-infos ms))
+
+
