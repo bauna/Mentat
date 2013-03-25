@@ -17,7 +17,7 @@ public class ArrayStack<T> implements Stack<T> {
      * @see ar.com.maba.tesis.collections.Stack#push(T)
      */
     @Override
-    @Pre("(> (:limit vs) (count (:stack vs)))")
+    @Pre(value = "(> (:limit vs) (count (:stack vs)))", data = "\"foo\"")
     public void push(T o) {
         if (limit == stack.size()) {
             throw new IllegalStateException("Limit reached");
@@ -38,7 +38,7 @@ public class ArrayStack<T> implements Stack<T> {
     }
     
     @Override
-    @Pre("false")
+    @Pre(enabled = false)
     public String toString() {
         return stack.toString();
     }
