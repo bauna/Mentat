@@ -52,7 +52,7 @@
   "creates a map where key are field names and key are the field values"
   (reduce #(assoc %1 (keyword (.getName %2)) (.get %2 o)) {} fields))
 
-(defn pre->fn
+(defn gen-fn
   "convert a @Pre.value into a function"
   [pre]
   (eval (binding [*read-eval* false] (read-string (str "(fn [vs] " pre ")")))))
@@ -62,16 +62,16 @@
   "get the value of @Pre Annotation. 
    if it don't have the annotation returns 'false' so it never calls this method"
   (let [pre (.getAnnotation m Pre)] 
-    (if (nil? pre)
-      nil {:pre (pre->fn (.value pre)), :enabled (.enabled pre), :method m})))
+    (if (or (nil? pre) (not (.enabled pre)))
+      nil 
+      {:pre (gen-fn (.value pre)), 
+       :data (gen-fn (.data pre)), 
+       :method m})))
 
 (defn methods-pre-fn
   "generates a map that containd a function for each methos that contains @Pre annotation"
   [methods]
-  (reduce {} #(assoc %1 %2 (pre->fn %2)) methods))
-
-(defn get-class-info 
-  "Geneartes ")
+  (reduce {} #(assoc %1 %2 (gen-fn %2)) methods))
 
 (defn str-invoke [instance method-str & args]
   (clojure.lang.Reflector/invokeInstanceMethod 
@@ -79,7 +79,33 @@
     method-str 
     (to-array args)))
 
+(defn all-method-infos
+  "generates all method-infos"
+  [methods]
+  (vec (filter #(not (nil? %)) (map method-info methods))))
+
 (defn eval-pre
-  ""
+  "evaluates all preconditions"
   [value-map method-infos]
   (map #(apply (:pre %) [value-map]) method-infos))
+
+;------------------
+(defn random-sel
+  "throw a coin an selects a method"
+  [xs]
+  (:method (nth xs (rand-int (count xs)))))
+
+(defn invoke-method
+  "invokes a method using an strategy function"
+  [o sel-fn mis]
+  (let [m (sel-fn mis)]
+    (.invoke m o )))
+
+(defn trace-gen
+  "generate a trace of invocations "
+  ([o sel-fn]
+    (let [fs (get-all-fields (class o)) mis (all-method-infos (public-methods o))]
+      (cons [nil (eval-pre (get-field-values o fs) mis)] (trace-gen o sel-fn fs mis))))
+  ([o sel-fn fields method-infos] 
+    (let []
+      (cons []))))
