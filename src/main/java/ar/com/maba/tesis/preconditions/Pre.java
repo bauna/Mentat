@@ -11,5 +11,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Pre {
     String value() default "true";
+    String data() default "";
     boolean enabled() default true;
 }
