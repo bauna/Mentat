@@ -54,18 +54,22 @@
 
 (defn gen-fn
   "convert a @Pre.value into a function"
-  [pre]
-  (eval (binding [*read-eval* false] (read-string (str "(fn [vs] " pre ")")))))
+  [fn-body]
+  (eval (binding [*read-eval* false] (read-string (str "(fn [vs] " fn-body ")")))))
+
+(defn- nil-fn [& args] nil)
 
 (defn method-info
   [^Method m]
   "get the value of @Pre Annotation. 
    if it don't have the annotation returns 'false' so it never calls this method"
-  (let [pre (.getAnnotation m Pre)] 
+  (let [pre (.getAnnotation m Pre) 
+        pre-val (.value pre) 
+        data-val (.data pre)] 
     (if (or (nil? pre) (not (.enabled pre)))
       nil 
-      {:pre (gen-fn (.value pre)), 
-       :data (gen-fn (.data pre)), 
+      {:pre (gen-fn pre-val), 
+       :data (if (empty? data-val) nil-fn (gen-fn (.data pre))), 
        :method m})))
 
 (defn methods-pre-fn
@@ -93,7 +97,7 @@
 (defn random-sel
   "throw a coin an selects a method"
   [xs]
-  (:method (nth xs (rand-int (count xs)))))
+  (nth xs (rand-int (count xs))))
 
 (defn invoke-method
   "invokes a method using an strategy function"
@@ -104,8 +108,12 @@
 (defn trace-gen
   "generate a trace of invocations "
   ([o sel-fn]
-    (let [fs (get-all-fields (class o)) mis (all-method-infos (public-methods o))]
-      (cons [nil (eval-pre (get-field-values o fs) mis)] (trace-gen o sel-fn fs mis))))
+    (let [fs (get-all-fields (class o)) 
+          mis (all-method-infos (public-methods o))]
+      (cons [nil (eval-pre (get-field-values o fs) mis)] 
+            (trace-gen o sel-fn fs mis))))
   ([o sel-fn fields method-infos] 
-    (let []
-      (cons []))))
+    (let [mi (sel-fn method-infos) m (:method mi) data-fn (:data mi)]
+      (.invoke m o (apply (:data mi)))
+      (cons [m (eval-pre (get-field-values o fs))] 
+            (trace-gen o sel-fn fs mis)))))
