@@ -115,5 +115,5 @@
   ([o sel-fn fields method-infos] 
     (let [mi (sel-fn method-infos) m (:method mi) data-fn (:data mi)]
       (.invoke m o (apply (:data mi)))
-      (cons [m (eval-pre (get-field-values o fs))] 
-            (trace-gen o sel-fn fs mis)))))
+      (cons [m (eval-pre (get-field-values o fields) method-infos)] 
+            (trace-gen o sel-fn fields method-infos)))))
