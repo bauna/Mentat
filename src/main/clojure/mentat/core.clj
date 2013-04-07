@@ -91,13 +91,14 @@
 (defn eval-pre
   "evaluates all preconditions"
   [value-map method-infos]
-  (map #(apply (:pre %) [value-map]) method-infos))
+  (map #(vector % (apply (:pre %) [value-map])) method-infos))
 
 ;------------------
 (defn random-sel
   "throw a coin an selects a method"
-  [xs]
-  (nth xs (rand-int (count xs))))
+  [pres]
+  (let [xs (filter #(nth % 1) pres)] 
+    (nth xs (rand-int (count xs)))))
 
 (defn invoke-method
   "invokes a method using an strategy function"
@@ -113,7 +114,8 @@
       (cons [nil (eval-pre (get-field-values o fs) mis)] 
             (trace-gen o sel-fn fs mis))))
   ([o sel-fn fields method-infos] 
-    (let [mi (sel-fn method-infos) m (:method mi) data-fn (:data mi)]
-      (.invoke m o (apply (:data mi)))
-      (cons [m (eval-pre (get-field-values o fields) method-infos)] 
+    (let [pres (eval-pre (get-field-values o fields) method-infos) 
+          mi (first (sel-fn pres)) m (:method mi) data-fn (:data mi)]
+      (.invoke m o (apply data-fn))
+      (cons [m pres] 
             (trace-gen o sel-fn fields method-infos)))))
