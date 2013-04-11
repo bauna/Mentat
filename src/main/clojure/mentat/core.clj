@@ -5,10 +5,7 @@
 
 (defn interface?
   "returns if the class is an interface."
-  [c]
-  (if (class? c) 
-    (.isInterface c) 
-    false))
+  [c] (and (class? c) (.isInterface c)))
 
 (defn public-methods1
   "gets public methods of a java class."
@@ -111,11 +108,15 @@
   ([o sel-fn]
     (let [fs (get-all-fields (class o)) 
           mis (all-method-infos (public-methods o))]
-      (cons [nil (eval-pre (get-field-values o fs) mis)] 
-            (trace-gen o sel-fn fs mis))))
+      (lazy-seq 
+        (cons [nil (eval-pre (get-field-values o fs) mis)] 
+            (trace-gen o sel-fn fs mis)))))
   ([o sel-fn fields method-infos] 
     (let [pres (eval-pre (get-field-values o fields) method-infos) 
-          mi (first (sel-fn pres)) m (:method mi) data-fn (:data mi)]
-      (.invoke m o (apply data-fn))
-      (cons [m pres] 
-            (trace-gen o sel-fn fields method-infos)))))
+          mi (first (sel-fn pres)) 
+          m (:method mi) 
+          data-fn (:data mi)]
+      (.invoke m o (to-array [(apply data-fn [o])]))
+      (lazy-seq 
+        (cons [m pres] 
+          (trace-gen o sel-fn fields method-infos))))))
