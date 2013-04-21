@@ -103,6 +103,9 @@
   (let [m (sel-fn mis)]
     (.invoke m o )))
 
+(defn create-sorted-map
+  []
+  (sorted-map-by #(compare (.toString %1) (.toString %2))))
 
 (defn trace-fn 
   "generates a fn that returns evals pres and invoke a method"
@@ -118,7 +121,7 @@
             data-val (apply (:data mi) [o])]
         (reset! lastm newm)
         (.invoke newm o (if (nil? data-val) nil (to-array [data-val])))
-        [oldm (map #(vector (:method (first %)) (second %)) pres)]))))
+        [oldm (reduce #(assoc %1 (:method (first %2)) (second %2)) (create-sorted-map) pres)]))))
   
 (defn trace-gen
   "generate a trace of invocations "
