@@ -66,11 +66,11 @@
     (if (or (nil? pre) (not (.enabled pre)))
       nil 
       {:pre (gen-fn pre-val), 
-       :data (if (empty? data-val) nil-fn (gen-fn (.data pre))), 
+       :data (if (empty? data-val) nil-fn (gen-fn data-val)), 
        :method m})))
 
 (defn methods-pre-fn
-  "generates a map that containd a function for each methos that contains @Pre annotation"
+  "generates a map that containd a function for each method that contains @Pre annotation"
   [methods]
   (reduce {} #(assoc %1 %2 (gen-fn %2)) methods))
 
@@ -103,20 +103,25 @@
   (let [m (sel-fn mis)]
     (.invoke m o )))
 
+
+(defn trace-fn 
+  "generates a fn that returns evals pres and invoke a method"
+  [o sel-fn]
+  (let [fs (get-all-fields (class o)) 
+        mis (all-method-infos (public-methods o))
+        lastm (atom nil)]
+    (fn [] 
+      (let [pres (eval-pre (get-field-values o fs) mis)
+            mi (first (sel-fn pres))
+            oldm @lastm 
+            newm (:method mi) 
+            data-val (apply (:data mi) [o])]
+        (reset! lastm newm)
+        (println (.toString newm))
+        (.invoke newm o (if (nil? data-val) nil (to-array [data-val])))
+        [oldm pres]))))
+  
 (defn trace-gen
   "generate a trace of invocations "
-  ([o sel-fn]
-    (let [fs (get-all-fields (class o)) 
-          mis (all-method-infos (public-methods o))]
-      (lazy-seq 
-        (cons [nil (eval-pre (get-field-values o fs) mis)] 
-            (trace-gen o sel-fn fs mis)))))
-  ([o sel-fn fields method-infos] 
-    (let [pres (eval-pre (get-field-values o fields) method-infos) 
-          mi (first (sel-fn pres)) 
-          m (:method mi) 
-          data-fn (:data mi)]
-      (.invoke m o (to-array [(apply data-fn [o])]))
-      (lazy-seq 
-        (cons [m pres] 
-          (trace-gen o sel-fn fields method-infos))))))
+  ([o sel-fn] (trace-gen (trace-fn o sel-fn)))
+  ([gen-fn] (lazy-seq (cons (gen-fn) (trace-gen gen-fn)))))
