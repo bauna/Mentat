@@ -117,7 +117,6 @@
             newm (:method mi) 
             data-val (apply (:data mi) [o])]
         (reset! lastm newm)
-        (println (.toString newm))
         (.invoke newm o (if (nil? data-val) nil (to-array [data-val])))
         [oldm pres]))))
   
