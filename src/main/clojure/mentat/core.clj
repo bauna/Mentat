@@ -118,7 +118,7 @@
             data-val (apply (:data mi) [o])]
         (reset! lastm newm)
         (.invoke newm o (if (nil? data-val) nil (to-array [data-val])))
-        [oldm pres]))))
+        [oldm (map #(vector (:method (first %)) (second %)) pres)]))))
   
 (defn trace-gen
   "generate a trace of invocations "
