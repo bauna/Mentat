@@ -1,9 +1,18 @@
 (import '(ar.com.maba.tesis.collections ArrayStack))
 (def a (ArrayStack. 10))
 (require '[mentat.core :as t])
+(require '[mentat.graph :as g])
+(require '[clojure.string :only (join) :as s])
+
+(def l (t/trace-gen a t/random-sel))
+(def t10 (take 10 l))
+(def g (g/build-finite-state-machine t10))
+(def sg (s/join "\n" (reverse g)))
+(println sg)
+
+
 
 (def l (t/trace-fn a t/random-sel))
-(def l (t/trace-gen a t/random-sel))
 
 (def fs (t/get-all-fields (class a)))
 (def vs (t/get-field-values a fs))
