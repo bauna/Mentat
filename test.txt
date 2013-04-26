@@ -4,10 +4,12 @@
 (require '[mentat.graph :as g])
 (require '[clojure.string :only (join) :as s])
 
+
+(def a (ArrayStack. 3))
 (def l (t/trace-gen a t/random-sel))
-(def t10 (take 10 l))
-(def g (g/build-finite-state-machine t10))
-(def sg (s/join "\n" (reverse g)))
+(def t100 (take 1000 l))
+(def g (g/build-finite-state-machine t100))
+(def sg (s/join "\n" g))
 (println sg)
 
 
