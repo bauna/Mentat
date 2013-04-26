@@ -39,4 +39,4 @@
             rcoll (rest coll) 
             st-name (state-name state)
             m-label (method-label method)]
-        (recur (conj so-far (str cur-state " -> " st-name "[ label = \"" m-label "\" ]")) rcoll st-name)))))
+        (recur (conj so-far (str cur-state " -> " st-name " [ label = \"" m-label "\" ]")) rcoll st-name)))))
