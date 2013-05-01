@@ -45,3 +45,10 @@
                            (conj states st-name) rcoll st-name)))))]
     (func coll)))
 
+(defn ^String build-dot-file
+  "generates the dot file string"
+  [coll]
+  (let [[transitions _] (build-finite-state-machine coll)]
+    (str "digraph finite_state_machine {\n\trankdir=LR;\n\tnode [shape = doublecircle]; start;\n\tnode [shape = circle];\n\t"
+         (s/join "\n\t" transitions) "\n}")))
+ 
