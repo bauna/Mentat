@@ -5,14 +5,14 @@
   (:import (java.lang.reflect Method Modifier Field)))
 
 (defn method-label
-  ""
+  "build a string representation for a method"
   [^Method m]
   (str (.getSimpleName (.getDeclaringClass m)) "." 
        (.getName m) 
        "(" (s/join "," (map #(.getSimpleName %) (seq (.getParameterTypes m)))) ")"))
 
 (defn pre-name
-  "shorts the name of a method"
+  "build a string for pre state"
   [pre-val]
   (let [m (first pre-val)
         v (second pre-val)]
