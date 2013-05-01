@@ -25,18 +25,23 @@
 
 (defn build-finite-state-machine
   "generates a finite state machine based on coll of pres"
-  ([coll] 
-    (if (empty? coll) #{}
-      (let [pres (first coll)
-            rcoll (rest coll) 
-            [_ state] pres 
-            st-name (state-name state)]
-        (build-finite-state-machine #{(str "start -> " st-name "")} rcoll st-name))))
-  ([so-far coll cur-state]
-    (if (empty? coll) so-far
-      (let [pres (first coll) 
-            [method state] pres 
-            rcoll (rest coll) 
-            st-name (state-name state)
-            m-label (method-label method)]
-        (recur (conj so-far (str cur-state " -> " st-name " [ label = \"" m-label "\" ]")) rcoll st-name)))))
+  [coll]
+  (let [mem-state-name (memoize state-name)
+        func (fn f ([coll] 
+                (if (empty? coll) [#{} #{}]
+                  (let [pres (first coll)
+                        rcoll (rest coll) 
+                        [_ state] pres 
+                        st-name (mem-state-name state)]
+                    (f #{(str "start -> " st-name "")} #{st-name} rcoll st-name))))
+              ([so-far states coll cur-state]
+                (if (empty? coll) [so-far states]
+                  (let [pres (first coll) 
+                        [method state] pres 
+                        rcoll (rest coll) 
+                        st-name (mem-state-name state)
+                        m-label (method-label method)]
+                    (recur (conj so-far (str cur-state " -> " st-name " [ label = \"" m-label "\" ]")) 
+                           (conj states st-name) rcoll st-name)))))]
+    (func coll)))
+
