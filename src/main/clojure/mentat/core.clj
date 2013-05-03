@@ -94,7 +94,7 @@
 (defn random-sel
   "throw a coin an selects a method"
   [pres]
-  (let [xs (filter #(nth % 1) pres)] 
+  (let [xs (filter second pres)] 
     (nth xs (rand-int (count xs)))))
 
 (defn invoke-method
