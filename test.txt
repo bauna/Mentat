@@ -8,9 +8,9 @@
 (def a (ArrayStack. 3))
 (def l (t/trace-gen a t/random-sel))
 (def t100 (take 1000 l))
-(def g (first (g/build-finite-state-machine t100)))
-(def sg (s/join "\n" g))
-(println sg)
+(def g (g/build-dot-file t100))
+
+(println g)
 
 
 
