@@ -6,16 +6,6 @@
 (defn interface?
   "returns if the class is an interface."
   [c] (and (class? c) (.isInterface c)))
-
-(defn public-methods1
-  "gets public methods of a java class."
-  [c]
-  (cond 
-    (= c Object) nil
-    (interface? c) nil
-    :else 
-    (let [{members :members} (r/reflect c :ancestors true)] 
-      (filter #(and (contains? (:flags %) :public) (contains? % :return-type)) members))))  
   
 (defn public? 
   "checks if methods is public"
