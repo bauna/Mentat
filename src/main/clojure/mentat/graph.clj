@@ -22,14 +22,14 @@
   (let [mem-state-name (memoize state-name)
         func (fn f 
                ([coll] 
-                 (if (empty? coll) {}
-                   (let [pres (first coll)
-                         rcoll (rest coll) 
+                 (if-let [s (seq coll)] 
+                   (let [pres (first s)
+                         rcoll (rest s) 
                          [_ state] pres 
                          st-name (mem-state-name state)]
                      (f {(str "start -> " st-name) #{}} rcoll st-name))))
                ([so-far coll cur-state]
-                 (if (empty? coll) so-far
+                 (if-let [s (seq coll)]
                    (let [pres (first coll) 
                          [method state] pres 
                          rcoll (rest coll) 
@@ -39,7 +39,8 @@
                      (recur (assoc so-far transition (if-let [labels (so-far transition)] 
                                             (conj labels m-label) 
                                             #{m-label})) 
-                                  rcoll st-name)))))]
+                                  rcoll st-name))
+                   so-far)))]
     (func coll)))
 
 (defn ^String build-dot-file
@@ -48,6 +49,8 @@
   (let [transitions (build-finite-state-machine coll)]
     (str "digraph finite_state_machine {\n\trankdir=LR;\n\tnode [shape = doublecircle]; start;\n\tnode [shape = circle];\n\t"
          (s/join "\n\t" 
-                 (map #(str (first %) " [label = \"" (s/join "\\n" (second %)) "\"];") transitions)) 
-         "\n}")))
+                 (map #(str (first %) 
+                             (if-let [labels (seq (second %))] 
+                               (str " [label = \"" (s/join "\\n" labels) "\"];"))) transitions)) 
+                 "\n}")))
  
