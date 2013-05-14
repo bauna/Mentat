@@ -56,7 +56,9 @@
     (if (or (nil? pre) (not (.enabled pre)))
       nil 
       {:pre (gen-fn pre-val), 
-       :data (if (empty? data-val) nil-fn (gen-fn data-val)), 
+       :data (if-let [s (seq data-val)] 
+               (gen-fn data-val) 
+               nil-fn), 
        :method m})))
 
 (defn methods-pre-fn
@@ -84,9 +86,9 @@
 (defn random-sel
   "throw a coin an selects a method"
   [pres]
-  (let [xs (filter second pres)] 
-    (nth xs (rand-int (count xs)))))
-
+  (if-let [xs (seq (filter second pres))]
+    (nth xs (rand-int (count xs))))) 
+  
 (defn invoke-method
   "invokes a method using an strategy function"
   [o sel-fn mis]
@@ -97,6 +99,15 @@
   []
   (sorted-map-by #(compare (.toString %1) (.toString %2))))
 
+(defn invoke-method
+  "invoke a object instance method if it throws an exception returns false or allows to specify a error value"
+  ([o ^Method method params] (invoke-method o method params false))
+  ([o ^Method method params error-result] 
+    (try 
+      (.invoke method o (if (nil? params) nil (to-array [params])))
+      true
+      (catch Throwable t error-result))))
+
 (defn trace-fn 
   "generates a fn that returns evals pres and invoke a method"
   [o sel-fn]
@@ -105,13 +116,16 @@
         lastm (atom nil)]
     (fn [] 
       (let [pres (eval-pre (get-field-values o fs) mis)
-            mi (first (sel-fn pres))
-            oldm @lastm 
-            newm (:method mi) 
-            data-val (apply (:data mi) [o])]
-        (reset! lastm newm)
-        (.invoke newm o (if (nil? data-val) nil (to-array [data-val])))
-        [oldm (reduce #(assoc %1 (:method (first %2)) (second %2)) (create-sorted-map) pres)]))))
+            sel (sel-fn pres)]
+        (if (nil? sel) nil
+          (let [mi (first sel)
+                oldm @lastm
+                newm (:method mi)
+                data-val (apply (:data mi) [o])]
+                  (reset! lastm newm)
+                  (if (invoke-method o newm data-val)
+                      [oldm (reduce #(assoc %1 (:method (first %2)) (second %2)) 
+                                    (create-sorted-map) pres)])))))))
   
 (defn trace-gen
   "generate a trace of invocations "
