@@ -1,14 +1,13 @@
 (import '(ar.com.maba.tesis.collections ArrayStack))
-(def a (ArrayStack. 10))
+(use 'clojure.stacktrace)
 (require '[mentat.core :as t])
 (require '[mentat.graph :as g])
 (require '[clojure.string :only (join) :as s])
 
+(def l (t/trace-gen ArrayStack t/random-sel))
+(def t1000 (take 1000 l))
 
-(def a (ArrayStack. 3))
-(def l (t/trace-gen a t/random-sel))
-(def t100 (take 1000 l))
-(def g (g/build-dot-file t100))
+(def g (g/build-dot-file t1000))
 
 (println g)
 

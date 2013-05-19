@@ -15,7 +15,6 @@
   [pres]
   (str "\"" (s/join "\\n" (map #(method-label (first %)) (filter second pres))) "\""))
 
-
 (defn build-finite-state-machine
   "generates a finite state machine based on coll of pres"
   [coll]
@@ -31,23 +30,26 @@
                ([so-far coll cur-state]
                  (if-let [s (seq coll)]
                    (let [pres (first coll) 
-                         [method state] pres 
-                         rcoll (rest coll) 
+                         [method state] pres
+                         m-label (method-label method)]
+                     (if (= :failed state)
+                       [(assoc so-far (str cur-state " -> trap") #{m-label}) true]  
+                       (let [rcoll (rest coll) 
                          st-name (mem-state-name state)
-                         m-label (method-label method)
                          transition (str cur-state " -> " st-name)]
-                     (recur (assoc so-far transition (if-let [labels (so-far transition)] 
-                                            (conj labels m-label) 
-                                            #{m-label})) 
-                                  rcoll st-name))
-                   so-far)))]
+                           (recur (assoc so-far transition
+                                         (if-let [labels (so-far transition)] 
+                                           (conj labels m-label) #{m-label})) 
+                                        rcoll st-name))))
+                   [so-far false])))]
     (func coll)))
 
 (defn ^String build-dot-file
   "generates the dot file string"
   [coll]
-  (let [transitions (build-finite-state-machine coll)]
-    (str "digraph finite_state_machine {\n\trankdir=LR;\n\tnode [shape = doublecircle]; start;\n\tnode [shape = circle];\n\t"
+  (let [[transitions has-trap] (build-finite-state-machine coll)]
+    (str "digraph finite_state_machine {\n\trankdir=LR;\n\tnode [shape = doublecircle]; start;" 
+         (if has-trap " trap;") "\n\tnode [shape = circle];\n\t"
          (s/join "\n\t" 
                  (map #(str (first %) 
                              (if-let [labels (seq (second %))] 

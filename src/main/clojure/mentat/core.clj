@@ -1,7 +1,7 @@
 (ns mentat.core
   (:require [clojure.reflect :as r])
   (:import (java.lang.reflect Method Modifier Field) 
-           (ar.com.maba.tesis.preconditions Pre)))
+           (ar.com.maba.tesis.preconditions Pre ClassDefinition)))
 
 (defn interface?
   "returns if the class is an interface."
@@ -44,7 +44,19 @@
   [fn-body]
   (eval (binding [*read-eval* false] (read-string (str "(fn [vs] " fn-body ")")))))
 
+(defn gen-builder-fn
+  "convert a @Pre.value into a function"
+  [fn-body]
+  (eval (binding [*read-eval* false] (read-string (str "(fn [& args] " fn-body ")")))))
+
 (defn- nil-fn [& args] nil)
+
+(defn class-info
+  "builds class info from a class annotated with @ClassDefinition"
+  [^Class clazz]
+  (let [def (.getAnnotation clazz ClassDefinition)]
+    {:invariant (gen-fn (.invariant def)) 
+     :builder (gen-builder-fn (.builder def))}))
 
 (defn method-info
   [^Method m]
@@ -110,24 +122,34 @@
 
 (defn trace-fn 
   "generates a fn that returns evals pres and invoke a method"
-  [o sel-fn]
-  (let [fs (get-all-fields (class o)) 
+  [^Class clazz sel-fn]
+  (let [cl-info (class-info clazz)
+        o (apply (:builder cl-info) nil)
+        fields (get-all-fields clazz)
+        inv-fn (:invariant cl-info)
         mis (all-method-infos (public-methods o))
         lastm (atom nil)]
     (fn [] 
-      (let [pres (eval-pre (get-field-values o fs) mis)
-            sel (sel-fn pres)]
-        (if (nil? sel) nil
+      (let [pres (eval-pre (get-field-values o fields) mis)]
+        (if-let [sel (seq (sel-fn pres))]
           (let [mi (first sel)
                 oldm @lastm
                 newm (:method mi)
                 data-val (apply (:data mi) [o])]
                   (reset! lastm newm)
-                  (if (invoke-method o newm data-val)
+                  (if (and (invoke-method o newm data-val) 
+                           (apply inv-fn [(get-field-values o fields)]))
                       [oldm (reduce #(assoc %1 (:method (first %2)) (second %2)) 
-                                    (create-sorted-map) pres)])))))))
-  
+                                    (create-sorted-map) pres)]
+                      
+                      [oldm :failed])))))))
+
 (defn trace-gen
   "generate a trace of invocations "
-  ([o sel-fn] (trace-gen (trace-fn o sel-fn)))
-  ([gen-fn] (lazy-seq (cons (gen-fn) (trace-gen gen-fn)))))
+  ([^Class clazz sel-fn] (trace-gen (trace-fn clazz sel-fn)))
+  ([gen-fn] 
+    (let [exec (gen-fn)] 
+      (if-not (= :failed (second exec)) 
+        (lazy-seq (cons exec (trace-gen gen-fn)))
+        (cons exec nil)))))
+
