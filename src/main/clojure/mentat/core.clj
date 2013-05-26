@@ -111,14 +111,17 @@
   []
   (sorted-map-by #(compare (.toString %1) (.toString %2))))
 
+(def ^:dynamic *execute-timeout* 3000)
+
 (defn invoke-method
   "invoke a object instance method if it throws an exception returns false or allows to specify a error value"
   ([o ^Method method params] (invoke-method o method params false))
-  ([o ^Method method params error-result] 
-    (try 
-      (.invoke method o (if (nil? params) nil (to-array [params])))
-      true
-      (catch Throwable t error-result))))
+  ([o ^Method method params error-result]
+    (let [fut (future (try 
+        (.invoke method o (if (nil? params) nil (to-array [params])))
+        true
+        (catch Throwable t error-result)))]
+      (deref fut *execute-timeout* error-result))))
 
 (defn trace-fn 
   "generates a fn that returns evals pres and invoke a method"

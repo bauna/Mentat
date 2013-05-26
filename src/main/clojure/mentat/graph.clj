@@ -14,7 +14,8 @@
 (defn ^String state-name
   "generates a state name"
   [pres]
-  (str "\"" (s/join "\\n" (map #(method-label (first %)) (filter second pres))) "\""))
+  (if (= :failed pres) "trap"
+    (str "\"" (s/join "\\n" (map #(method-label (first %)) (filter second pres))) "\"")))
 
 (defn build-finite-state-machine
   "generates a finite state machine based on coll of pres"
@@ -27,7 +28,9 @@
                          rcoll (rest s) 
                          [_ state] pres 
                          st-name (mem-state-name state)]
-                     (f (om/ordered-map (str "start -> " st-name) #{}) rcoll st-name))))
+                     (if (= :failed state) 
+                       [(om/ordered-map "start -> trap"  #{}) true]
+                       (f (om/ordered-map (str "start -> " st-name) #{}) rcoll st-name)))))
                ([so-far coll cur-state]
                  (if-let [s (seq coll)]
                    (let [pres (first coll) 
@@ -53,7 +56,8 @@
          (if has-trap " trap;") "\n\tnode [shape = circle];\n\t"
          (s/join "\n\t" 
                  (map #(str (first %) 
+                            (if (= :failed (second %)) ""
                              (if-let [labels (seq (second %))] 
-                               (str " [label = \"" (s/join "\\n" labels) "\"];"))) transitions)) 
+                               (str " [label = \"" (s/join "\\n" labels) "\"];")))) transitions)) 
                  "\n}")))
  
