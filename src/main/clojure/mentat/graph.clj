@@ -1,6 +1,7 @@
 (ns mentat.graph
   (:require [clojure.reflect :as r] 
             [mentat.core :as t]
+            [flatland.ordered.map :only (ordered-map) :as om]
             [clojure.string :only (join) :as s])
   (:import (java.lang.reflect Method Modifier Field)))
 
@@ -26,7 +27,7 @@
                          rcoll (rest s) 
                          [_ state] pres 
                          st-name (mem-state-name state)]
-                     (f {(str "start -> " st-name) #{}} rcoll st-name))))
+                     (f (om/ordered-map (str "start -> " st-name) #{}) rcoll st-name))))
                ([so-far coll cur-state]
                  (if-let [s (seq coll)]
                    (let [pres (first coll) 
