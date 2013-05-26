@@ -7,7 +7,7 @@ import ar.com.maba.tesis.preconditions.ClassDefinition;
 import ar.com.maba.tesis.preconditions.Pre;
 
 @ClassDefinition(builder="(new ar.com.maba.tesis.collections.ArrayStack 5)",
-        invariant = "(> 3 (count (:stack vs)))")
+        invariant = "(>= (:limit vs) (count (:stack vs)))")
 public class ArrayStack<T> implements Stack<T> {
     private List<T> stack = new ArrayList<>();
     private final int limit;
