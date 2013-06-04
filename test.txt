@@ -1,5 +1,6 @@
 (import '(ar.com.maba.tesis.collections ArrayStack))
 (use 'clojure.stacktrace)
+(require '[mentat.selDSL :as d])
 (require '[mentat.core :as t])
 (require '[mentat.graph :as g])
 (require '[clojure.string :only (join) :as s])
