@@ -13,4 +13,5 @@ public @interface Pre {
     String value() default "true";
     String data() default "";
     boolean enabled() default true;
+    String name() default "";
 }

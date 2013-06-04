@@ -64,14 +64,16 @@
    if it don't have the annotation returns 'false' so it never calls this method"
   (let [pre (.getAnnotation m Pre) 
         pre-val (.value pre) 
-        data-val (.data pre)] 
+        data-val (.data pre)
+        name (.name pre)] 
     (if (or (nil? pre) (not (.enabled pre)))
       nil 
       {:pre (gen-fn pre-val), 
        :data (if-let [s (seq data-val)] 
                (gen-fn data-val) 
                nil-fn), 
-       :method m})))
+       :method m,
+       :name (if (empty? name) (.getName m) name)})))
 
 (defn methods-pre-fn
   "generates a map that containd a function for each method that contains @Pre annotation"
