@@ -1,4 +1,5 @@
-# Mentat
+# [Mentat](http://dune.wikia.com/wiki/Mentat)
+
 
 A Clojure library designed to generate a Enableness Graphs of annotated Java Class.
 
