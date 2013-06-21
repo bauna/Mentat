@@ -21,4 +21,4 @@
 (def ms (t/public-methods a))
 (def mis (t/all-method-infos ms))
 
-
+(. ar.com.maba.tesis.z3.example.JavaExample main)
