@@ -1,6 +1,8 @@
 (import '(ar.com.maba.tesis.collections ArrayStack))
+(import '(com.microsoft.z3 Context Status Solver))
 (use 'clojure.stacktrace)
 (require '[mentat.selDSL :as d])
+(require '[mentat.z3 :as z3])
 (require '[mentat.core :as t])
 (require '[mentat.graph :as g])
 (require '[clojure.string :only (join) :as s])
@@ -22,3 +24,27 @@
 (def mis (t/all-method-infos ms))
 
 (. ar.com.maba.tesis.z3.example.JavaExample main)
+
+install z3 jar in lein repo:
+- add "localrepo" lein plugin to your config
+
+- in "~/.lein" create file "profiles.clj" with: {:user {:plugins [[lein-localrepo "0.5.0"]]}}
+
+- execute: lein localrepo install <location of com.microsoft.z3.jar> com.microsoft/z3 4.3.2.Uecceb0ac
+
+
+
+(declare-datatypes (T) ((Stack (List T)))))
+(define-fun count ((x!1 Stack)) Int
+  (ite (= x!1 nil) 0 (+ 1 (count (tail x!1)))) 
+  )
+(declare-const s1 (Stack Int))
+
+(require '[mentat.z3 :as z3])
+(def ctx (z3/create-context))
+(def symbs {(symbol "o") (z3/mk-int-const ctx "o")})
+(def expr (read-string "(= 0 (mod o 2))"))
+(z3/z3 expr symbs ctx)
+
+run lein to be able to use z3
+LD_LIBRARY_PATH=./native/ lein repl
