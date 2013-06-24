@@ -24,7 +24,7 @@
         Status/SATISFIABLE :sat
         Status/UNSATISFIABLE :unsat
         Status/UNKNOWN :unknown
-        (throw (IllegalArgumentException. (str "unknow Status: " )))))))
+        (throw (IllegalArgumentException. (str "unknow Status: " status)))))))
 
 (def z3-single-expr)
 (def z3)
