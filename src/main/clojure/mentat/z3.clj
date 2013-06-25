@@ -19,11 +19,12 @@
   [^Context ctx ^BoolExpr bool-expr ]
   (let [solver (.mkSolver ctx)]
     (.add solver (into-array BoolExpr [bool-expr]))
-    (let [status (.check solver)] 
-      (case status 
-        Status/SATISFIABLE :sat
-        Status/UNSATISFIABLE :unsat
-        Status/UNKNOWN :unknown
+    (let [^Solver status (.check solver)]
+      (println "status:" status (.ordinal status))
+      (case (.ordinal status) 
+        2 :sat
+        0 :unsat
+        1 :unknown
         (throw (IllegalArgumentException. (str "unknow Status: " status)))))))
 
 (def z3-single-expr)
