@@ -1,6 +1,6 @@
 (ns mentat.z3
   (:import (java.lang.reflect Method Modifier Field) 
-           (com.microsoft.z3 Context Status Solver BoolExpr)
+           (com.microsoft.z3 Context Status Solver BoolExpr ArithExpr)
            (ar.com.maba.tesis.preconditions Pre ClassDefinition)))
 
 (def ^:dynamic *z3-config* 
@@ -42,6 +42,62 @@
   (.mkMod ctx 
     (z3-single-expr (first params) nil symbols ctx) 
     (z3-single-expr (second params) nil symbols ctx)))
+
+(defmethod z3-single-symbol (symbol "=>") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkImplies ctx 
+    (z3-single-expr (first params) nil symbols ctx) 
+    (z3-single-expr (second params) nil symbols ctx)))
+
+(defmethod z3-single-symbol (symbol "iff") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkIff ctx 
+    (z3-single-expr (first params) nil symbols ctx) 
+    (z3-single-expr (second params) nil symbols ctx)))
+
+(defmethod z3-single-symbol (symbol "xor") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkXor ctx 
+    (z3-single-expr (first params) nil symbols ctx) 
+    (z3-single-expr (second params) nil symbols ctx)))
+
+(defmethod z3-single-symbol (symbol "and") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkAnd ctx (into-array BoolExpr (map #(z3-single-expr % nil symbols ctx) params))))
+
+(defmethod z3-single-symbol (symbol "or") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkOr ctx (into-array BoolExpr (map #(z3-single-expr % nil symbols ctx) params))))
+
+(defmethod z3-single-symbol (symbol "+") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkAdd ctx (into-array ArithExpr (map #(z3-single-expr % nil symbols ctx) params))))
+
+(defmethod z3-single-symbol (symbol "*") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkMul ctx (into-array ArithExpr (map #(z3-single-expr % nil symbols ctx) params))))
+
+(defmethod z3-single-symbol (symbol "-") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkSub ctx (into-array ArithExpr (map #(z3-single-expr % nil symbols ctx) params))))
+
+(defmethod z3-single-symbol (symbol "not") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkNot ctx (z3-single-expr (first params) nil symbols ctx)))
+
+(defmethod z3-single-symbol (symbol "/") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkDiv ctx 
+    (z3-single-expr (first params) nil symbols ctx) 
+    (z3-single-expr (second params) nil symbols ctx)))
+
+(defmethod z3-single-symbol (symbol "true") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkTrue ctx))
+
+(defmethod z3-single-symbol (symbol "false") 
+  [ident-fn params symbols ^Context ctx]
+  (.mkFalse ctx))
 
 (defmethod z3-single-symbol :default
   [ident-fn params symbols ^Context ctx]
