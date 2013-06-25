@@ -21,10 +21,10 @@
     (.add solver (into-array BoolExpr [bool-expr]))
     (let [^Solver status (.check solver)]
       (println "status:" status (.ordinal status))
-      (case (.ordinal status) 
-        2 :sat
-        0 :unsat
-        1 :unknown
+      (case (.toInt status) 
+        1 :sat
+        0 :unknown
+        -1 :unsat
         (throw (IllegalArgumentException. (str "unknow Status: " status)))))))
 
 (def z3-single-expr)
