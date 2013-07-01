@@ -10,7 +10,6 @@
   [keys body]
   (let [ksymb (mk-symb keys)
         vs (symbol "vs")]
-    (println [keys body ksymb vs])
     (eval `(fn [m#] 
              (let [{:keys ~ksymb :as ~vs} m#] ~@body)))))
 
