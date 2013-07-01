@@ -3,6 +3,17 @@
   (:import (java.lang.reflect Method Modifier Field) 
            (ar.com.maba.tesis.preconditions Pre ClassDefinition)))
 
+(defn mk-symb [xs]
+  (map #(-> % name symbol) xs))
+
+(defn gen-fn-key
+  [keys body]
+  (let [ksymb (mk-symb keys)
+        vs (symbol "vs")]
+    (println [keys body ksymb vs])
+    (eval `(fn [m#] 
+             (let [{:keys ~ksymb :as ~vs} m#] ~@body)))))
+
 (defn interface?
   "returns if the class is an interface."
   [c] (and (class? c) (.isInterface c)))
