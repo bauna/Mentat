@@ -63,6 +63,31 @@
     (z3-single-expr (first params) nil symbols inst-state ctx) 
     (z3-single-expr (second params) nil symbols inst-state ctx)))
 
+(defmethod z3-single-symbol (symbol "<") 
+  [ident-fn params symbols inst-state ^Context ctx]
+  (.mkLt ctx 
+    (z3-single-expr (first params) nil symbols inst-state ctx) 
+    (z3-single-expr (second params) nil symbols inst-state ctx)))
+
+(defmethod z3-single-symbol (symbol "<=")
+  [ident-fn params symbols inst-state ^Context ctx]
+  (.mkLe ctx 
+    (z3-single-expr (first params) nil symbols inst-state ctx) 
+    (z3-single-expr (second params) nil symbols inst-state ctx)))
+
+(defmethod z3-single-symbol (symbol ">") 
+  [ident-fn params symbols inst-state ^Context ctx]
+  (println ident-fn params symbols inst-state ctx)
+  (.mkGt ctx 
+    (z3-single-expr (first params) nil symbols inst-state ctx) 
+    (z3-single-expr (second params) nil symbols inst-state ctx)))
+
+(defmethod z3-single-symbol (symbol ">=")
+  [ident-fn params symbols inst-state ^Context ctx]
+  (.mkGe ctx 
+    (z3-single-expr (first params) nil symbols inst-state ctx) 
+    (z3-single-expr (second params) nil symbols inst-state ctx)))
+
 (defmethod z3-single-symbol (symbol "and") 
   [ident-fn params symbols inst-state ^Context ctx]
   (.mkAnd ctx (into-array BoolExpr (map #(z3-single-expr % nil symbols inst-state ctx) params))))
