@@ -158,9 +158,7 @@
 
 (defmethod z3-single-expr java.lang.Boolean 
   [ident-fn params symbols inst-state ^Context ctx]
-  (if ident-fn 
-    (.mkTrue ctx) 
-    (.mkFalse ctx)))
+  (.mkBool ctx ident-fn))
 
 (defmethod z3-single-expr :default 
   [ident-fn params symbols inst-state ^Context ctx]
