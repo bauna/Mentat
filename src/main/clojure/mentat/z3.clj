@@ -1,7 +1,7 @@
 (ns mentat.z3
   (:require [mentat.core :only gen-fn-key :as mc ])
   (:import (java.lang.reflect Method Modifier Field) 
-           (com.microsoft.z3 Context Status Solver BoolExpr ArithExpr)
+           (com.microsoft.z3 Context Status Solver BoolExpr ArithExpr Model)
            (ar.com.maba.tesis.preconditions Pre ClassDefinition)))
 
 (def ^:dynamic *z3-config* 
@@ -15,17 +15,21 @@
   [^Context ctx symbol]
   (.mkIntConst ctx (str symbol)))
 
-(defn check-sat 
+(defn ^Solver mkSolver
+  ([^Context ctx] (.mkSolver ctx))
+  ([^Context ctx symbol] (.mkSolver ctx symbol)))
+
+(defn ^Model get-model 
   "check sat on a Context"
-  [^Context ctx ^BoolExpr bool-expr ]
-  (let [solver (.mkSolver ctx)]
+  [^Solver solver ^BoolExpr bool-expr]
     (.add solver (into-array BoolExpr [bool-expr]))
-    (let [^Solver status (.check solver)]
+    (let [^Status status (.check solver)]
       (case (.toInt status) 
-        1 :sat
-        0 :unknown
-        -1 :unsat
-        (throw (IllegalArgumentException. (str "unknow Status: " status)))))))
+        1 (.getModel solver)
+        0 nil
+       -1 nil
+        (throw (IllegalArgumentException. (str "unknow Status: " status))))))
+
 
 (def z3-single-expr)
 (def z3)
