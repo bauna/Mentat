@@ -136,7 +136,7 @@
   [ident-fn params symbols inst-state ^Context ctx]
   (if-let [z3-obj (symbols ident-fn)]
     z3-obj
-    (throw (IllegalArgumentException. (str "symbol:" ident-fn " unknow")))))
+    (throw (IllegalArgumentException. (str "symbol: '" ident-fn "' unknow")))))
 
 ;-------------------------------------------------------------
 (defmulti z3-single-expr (fn [ident-fn params symbols inst-state ^Context ctx] (class ident-fn)))
