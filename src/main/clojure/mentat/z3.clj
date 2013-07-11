@@ -151,7 +151,7 @@
 
 (defmethod z3-single-symbol :default
   [ident-fn params symbols inst-state ^Context ctx]
-  (if-let [z3-obj (symbols ident-fn)]
+  (if-let [z3-obj (symbols (keyword ident-fn))]
     z3-obj
     (throw (IllegalArgumentException. (str "symbol: '" ident-fn "' unknow")))))
 

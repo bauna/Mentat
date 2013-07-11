@@ -42,12 +42,14 @@ install z3 jar in lein repo:
 
 (require '[mentat.z3 :as z3])
 (def ctx (z3/create-context))
-(def symbs {(symbol "o") (z3/mk-int-const ctx "o")})
+(def symbs {:o (z3/mk-int-const ctx "o")})
 (def inst-state {:limit 3 :stack [1 2]})
-(def expr1 (read-string "(= 0 (mod o 2))"))
+(def expr1 (read-string "(and (< 3 o) (= 0 (mod o 2)))"))
 (def expr2 (read-string "(eval (= limit (count stack)))"))
-(def bool-expr (z3/z3 expr2 symbs inst-state ctx))
-(z3/check-sat ctx bool-expr)
+(def bool-expr1 (z3/z3 expr1 symbs inst-state ctx))
+(def bool-expr2 (z3/z3 expr2 symbs inst-state ctx))
+(def model1 (z3/get-model (z3/mkSolver ctx) bool-expr1))
+(def generated-params (z3/model-to-map model1 symbs))
 
 run lein to be able to use z3
 LD_LIBRARY_PATH=./native/ lein repl
