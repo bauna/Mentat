@@ -30,6 +30,19 @@
        -1 nil
         (throw (IllegalArgumentException. (str "unknow Status: " status))))))
 
+(defn get-model-value
+  [^Model model expr]
+  (if-let [value (.evaluate model expr false)] 
+    (cond 
+      (.isIntNum value) (.getInt value)
+      (.isRealNum value) (.getReal value) 
+      (.isRatNum value) (/ (.getInt (.getNumerator value)) (.getInt (.getDenominator value)))
+      :else (throw (IllegalArgumentException. (str "unknow 'value' type: " value))))))
+
+(defn model-to-map 
+  "converts a z3 Model to map"
+  [^Model model expressions]
+  (reduce #(assoc %1 (first %2) (get-model-value model (second %2))) {} expressions))
 
 (def z3-single-expr)
 (def z3)
