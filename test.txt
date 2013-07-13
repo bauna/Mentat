@@ -51,5 +51,17 @@ install z3 jar in lein repo:
 (def model1 (z3/get-model (z3/mkSolver ctx) bool-expr1))
 (def generated-params (z3/model-to-map model1 symbs))
 
+
+---------------------------
+(import '(ar.com.maba.tesis.collections NumbersToZ3))
+(require '[mentat.core :as mc])
+(require '[mentat.z3 :as z3])
+(require :reload '[mentat.javaZ3 :as jz3])
+(def ctx (z3/create-context))
+(def i2z3 (NumbersToZ3.))
+
+(jz3/mk-instance ctx i2z3)
+---------------------
+
 run lein to be able to use z3
 LD_LIBRARY_PATH=./native/ lein repl
