@@ -7,11 +7,6 @@
            (java.util.concurrent.atomic AtomicInteger AtomicLong AtomicBoolean)
            (java.util Set List)))
 
-;Field stringListField = Test.class.getDeclaredField("stringList");
-;        ParameterizedType stringListType = (ParameterizedType) stringListField.getGenericType();
-;        Class<?> stringListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
-;        System.out.println(stringListClass); // class java.lang.String.
-
 (defn get-generic-type 
   [^Field f]
   (-> f .getGenericType .getActualTypeArguments (aget 0)))
