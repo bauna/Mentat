@@ -4,7 +4,52 @@
   (:import (java.lang.reflect Method Modifier Field) 
            (com.microsoft.z3 Context Status Solver BoolExpr ArithExpr)
            (ar.com.maba.tesis.preconditions Pre ClassDefinition)
-           (java.util.concurrent.atomic AtomicInteger AtomicLong AtomicBoolean)))
+           (java.util.concurrent.atomic AtomicInteger AtomicLong AtomicBoolean)
+           (java.util Set List)))
+
+;Field stringListField = Test.class.getDeclaredField("stringList");
+;        ParameterizedType stringListType = (ParameterizedType) stringListField.getGenericType();
+;        Class<?> stringListClass = (Class<?>) stringListType.getActualTypeArguments()[0];
+;        System.out.println(stringListClass); // class java.lang.String.
+
+(defn get-generic-type 
+  [^Field f]
+  (-> f .getGenericType .getActualTypeArguments (aget 0)))
+
+(defmulti get-sort-for-class 
+  (fn [^Context ctx ^Class klass] klass))
+
+(defmethod get-sort-for-class java.lang.Integer 
+  [^Context ctx ^Class klass] 
+  [(.getIntSort ctx) #(.mkInt ctx (int %))])
+
+(defmethod get-sort-for-class java.lang.Double 
+  [^Context ctx ^Class klass] 
+  [(.getRealSort ctx) #(.mkReal (str %))])
+
+(defmethod get-sort-for-class java.lang.Float 
+  [^Context ctx ^Class klass] 
+  [(.getRealSort ctx) #(.mkReal (str %))])
+
+(defmethod get-sort-for-class java.lang.Long 
+  [^Context ctx ^Class klass] 
+  [(.getIntSort ctx) #(.mkInt %)])
+
+(defmethod get-sort-for-class java.lang.Boolean 
+  [^Context ctx ^Class klass] 
+  [(.getBooleanSort ctx) #(.mkBool %)])
+
+(defn def-list-field 
+  [^Context ctx ^String name ^Field f ^List value]
+  (println ctx name f value (get-generic-type f))
+  (let [[elems-sort const-fun] (get-sort-for-class ctx (get-generic-type f)) 
+        const (.mkArrayConst ctx name elems-sort (.getIntSort ctx))
+        func (fn [idx val] 
+               (let [val-expr (const-fun val)]
+                 (.mkEq ctx val-expr (.mkSelect ctx const (.mkInt ctx idx))))
+               (inc idx))]
+    (reduce func 0 value)
+    const))
 
 (defn def-boolean-field
   [^Context ctx ^String name ^Boolean value]
@@ -61,6 +106,8 @@
 						 (= Long/TYPE field-type) (def-long-field ctx name v)
 						 (= Float/TYPE field-type) (def-double-field ctx name (str v))
 						 (= Double/TYPE field-type) (def-double-field ctx name (str v))
+       
+             (= List field-type) (def-list-field ctx name f (str v))
              :else (throw (IllegalArgumentException. (str "unsupported field type: " field-type ", name: " name))))))
 
 (defn mk-instance
