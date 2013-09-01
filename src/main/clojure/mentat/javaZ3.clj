@@ -14,37 +14,80 @@
 (defmulti get-sort-for-class 
   (fn [^Context ctx ^Class klass] klass))
 
+(defmethod get-sort-for-class java.lang.Boolean
+  [^Context ctx ^Class klass]
+  [(.getBoolSort ctx) #(.mkBool ctx %)])
+
+(defmethod get-sort-for-class java.util.concurrent.atomic.AtomicBoolean 
+  [^Context ctx ^Class klass] 
+  [(.getBoolSort ctx) #(.mkBool ctx (.get %))])
+
+(defmethod get-sort-for-class java.lang.Byte 
+  [^Context ctx ^Class klass] 
+  [(.getIntSort ctx) #(.mkInt ctx (int %))])
+
+(defmethod get-sort-for-class java.lang.Short 
+  [^Context ctx ^Class klass] 
+  [(.getIntSort ctx) #(.mkInt ctx (int %))])
+
 (defmethod get-sort-for-class java.lang.Integer 
   [^Context ctx ^Class klass] 
   [(.getIntSort ctx) #(.mkInt ctx (int %))])
 
-(defmethod get-sort-for-class java.lang.Double 
+(defmethod get-sort-for-class java.util.concurrent.atomic.AtomicInteger 
   [^Context ctx ^Class klass] 
-  [(.getRealSort ctx) #(.mkReal (str %))])
-
-(defmethod get-sort-for-class java.lang.Float 
-  [^Context ctx ^Class klass] 
-  [(.getRealSort ctx) #(.mkReal (str %))])
+  [(.getIntSort ctx) #(.mkInt ctx (int %))])
 
 (defmethod get-sort-for-class java.lang.Long 
   [^Context ctx ^Class klass] 
-  [(.getIntSort ctx) #(.mkInt %)])
+  [(.getIntSort ctx) #(.mkInt ctx (long %))])
 
-(defmethod get-sort-for-class java.lang.Boolean 
+(defmethod get-sort-for-class java.util.concurrent.atomic.AtomicLong 
   [^Context ctx ^Class klass] 
-  [(.getBooleanSort ctx) #(.mkBool %)])
+  [(.getIntSort ctx) #(.mkInt ctx (long (.get %)))])
+
+(defmethod get-sort-for-class java.math.BigInteger 
+  [^Context ctx ^Class klass] 
+  [(.getIntSort ctx) #(.mkInt ctx (int %))])
+
+(defmethod get-sort-for-class java.lang.Float 
+  [^Context ctx ^Class klass] 
+  [(.getRealSort ctx) #(.mkReal ctx (str %))])
+
+(defmethod get-sort-for-class java.lang.Double 
+  [^Context ctx ^Class klass] 
+  [(.getRealSort ctx) #(.mkReal ctx (str %))])
+
+(defmethod get-sort-for-class java.math.BigDecimal 
+  [^Context ctx ^Class klass] 
+  [(.getRealSort ctx) #(.mkReal ctx (str %))])
+
+
 
 (defn def-list-field 
-  [^Context ctx ^String name ^Field f ^List value]
-  (println ctx name f value (get-generic-type f))
-  (let [[elems-sort const-fun] (get-sort-for-class ctx (get-generic-type f)) 
-        const (.mkArrayConst ctx name elems-sort (.getIntSort ctx))
+  [^Context ctx ^String name elems-sort const-fun array]
+  (let [const (.mkArrayConst ctx name (.getIntSort ctx) elems-sort)
         func (fn [idx val] 
                (let [val-expr (const-fun val)]
                  (.mkEq ctx val-expr (.mkSelect ctx const (.mkInt ctx idx))))
                (inc idx))]
-    (reduce func 0 value)
+    (reduce func 0 array)
     const))
+
+(defn def-java-util-list-field 
+  [^Context ctx ^String name ^Field f ^List array] 
+  (let [[elems-sort const-fun] (get-sort-for-class ctx (get-generic-type f))] 
+    (def-list-field ctx name elems-sort const-fun array)))
+
+(defn def-boolean-array-field
+  [^Context ctx ^String name ^List array]
+  (let [[elems-sort const-fun] (get-sort-for-class ctx java.lang.Boolean)] 
+    (def-list-field ctx name elems-sort const-fun array)))
+
+(defn def-int-array-field
+  [^Context ctx ^String name ^List array]
+  (let [[elems-sort const-fun] (get-sort-for-class ctx java.lang.Integer)] 
+    (def-list-field ctx name elems-sort const-fun array)))
 
 (defn def-boolean-field
   [^Context ctx ^String name ^Boolean value]
@@ -72,7 +115,7 @@
 
 (defn def-double-field
   [^Context ctx ^String name ^String value]
-   (let [const (.mkIntConst ctx name)] 
+   (let [const (.mkRealConst ctx name)] 
     (.mkEq ctx const (.mkReal ctx value))
     const))
 
@@ -101,8 +144,9 @@
 						 (= Long/TYPE field-type) (def-long-field ctx name v)
 						 (= Float/TYPE field-type) (def-double-field ctx name (str v))
 						 (= Double/TYPE field-type) (def-double-field ctx name (str v))
-       
-             (= List field-type) (def-list-field ctx name f (str v))
+             (= (Class/forName "[Ljava.util.concurrent.atomic.AtomicBoolean;") field-type) (def-boolean-array-field ctx name v)
+             (= (Class/forName "[Ljava.lang.Integer;") field-type) (def-int-array-field ctx name v)
+             (= List field-type) (def-java-util-list-field ctx name f v)
              :else (throw (IllegalArgumentException. (str "unsupported field type: " field-type ", name: " name))))))
 
 (defn mk-instance
