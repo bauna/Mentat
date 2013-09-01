@@ -15,9 +15,19 @@
   [^Context ctx symbol]
   (.mkIntConst ctx (str symbol)))
 
-(defn ^Solver mkSolver
+(defn ^Solver mk-solver
   ([^Context ctx] (.mkSolver ctx))
   ([^Context ctx symbol] (.mkSolver ctx symbol)))
+
+(defn sat? 
+  "checks sat on a Solver"
+  [^Solver solver]
+    (let [^Status status (.check solver)]
+      (case (.toInt status) 
+        1 true
+        0 false
+       -1 false
+        (throw (IllegalArgumentException. (str "unknow Status: " status))))))
 
 (defn ^Model get-model 
   "check sat on a Context"

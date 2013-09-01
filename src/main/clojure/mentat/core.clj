@@ -78,11 +78,12 @@
         name (.name pre)] 
     (if (or (nil? pre) (not (.enabled pre)))
       nil 
-      {:pre (gen-fn pre-val), 
+      {:pre (gen-fn pre-val)
+       :pre-expr (read-string pre-val)
        :data (if-let [s (seq data-val)] 
                (gen-fn data-val) 
-               nil-fn), 
-       :method m,
+               nil-fn)
+       :method m
        :name (if (empty? name) (.getName m) name)})))
 
 (defn methods-pre-fn
@@ -105,66 +106,3 @@
   "evaluates all preconditions"
   [value-map method-infos]
   (map #(vector % (apply (:pre %) [value-map])) method-infos))
-
-;------------------
-(defn random-sel
-  "throw a coin an selects a method"
-  [pres]
-  (if-let [xs (seq (filter second pres))]
-    (nth xs (rand-int (count xs))))) 
-  
-(defn invoke-method
-  "invokes a method using an strategy function"
-  [o sel-fn mis]
-  (let [m (sel-fn mis)]
-    (.invoke m o )))
-
-(defn create-sorted-map
-  []
-  (sorted-map-by #(compare (.toString %1) (.toString %2))))
-
-(def ^:dynamic *execute-timeout* 3000)
-
-(defn invoke-method
-  "invoke a object instance method if it throws an exception returns false or allows to specify a error value"
-  ([o ^Method method params] (invoke-method o method params false))
-  ([o ^Method method params error-result]
-    (let [fut (future (try 
-        (.invoke method o (if (nil? params) nil (to-array [params])))
-        true
-        (catch Throwable t error-result)))]
-      (deref fut *execute-timeout* error-result))))
-
-(defn trace-fn 
-  "generates a fn that returns evals pres and invoke a method"
-  [^Class clazz sel-fn]
-  (let [cl-info (class-info clazz)
-        o (apply (:builder cl-info) nil)
-        fields (get-all-fields clazz)
-        inv-fn (:invariant cl-info)
-        mis (all-method-infos (public-methods o))
-        lastm (atom nil)]
-    (fn [] 
-      (let [pres (eval-pre (get-field-values o fields) mis)]
-        (if-let [sel (seq (sel-fn pres))]
-          (let [mi (first sel)
-                oldm @lastm
-                newm (:method mi)
-                data-val (apply (:data mi) [o])]
-                  (reset! lastm newm)
-                  (if (and (invoke-method o newm data-val) 
-                           (apply inv-fn [(get-field-values o fields)]))
-                      [oldm (reduce #(assoc %1 (:method (first %2)) (second %2)) 
-                                    (create-sorted-map) pres)]
-                      
-                      [oldm :failed])))))))
-
-(defn trace-gen
-  "generate a trace of invocations "
-  ([^Class clazz sel-fn] (trace-gen (trace-fn clazz sel-fn)))
-  ([gen-fn] 
-    (let [exec (gen-fn)] 
-      (if-not (= :failed (second exec)) 
-        (lazy-seq (cons exec (trace-gen gen-fn)))
-        (cons exec nil)))))
-

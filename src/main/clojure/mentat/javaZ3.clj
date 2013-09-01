@@ -151,7 +151,33 @@
 
 (defn mk-instance
   "create a constant in the context for each instance field setting the value of the constant"
-  [^Context ctx o]
-  (let [fields (mc/get-all-fields (class o))
-        fvalues (mc/get-field-values o fields)]
+  ([^Context ctx o] (mk-instance ctx o (mc/get-all-fields (class o))))
+  ([^Context ctx o fields] (mk-instance ctx o fields (mc/get-field-values o fields)))
+  ([^Context ctx o fields fvalues]
     (reduce #(assoc %1 (keyword (.getName %2)) (field-to-z3 o ctx %2)) {} fields)))
+
+(defn- fzipmap
+  "Returns a map with the keys mapped to the corresponding vals."
+  {:static true}
+  [f fkeys vals]
+    (loop [map {}
+           ks (seq keys)
+           vs (seq vals)]
+      (if (and ks vs)
+        (let [[k v] (f (first ks) (first vs))]
+          (recur (if (and k v) (assoc map k v) map)
+                 (next ks)
+                 (next vs)))
+        map)))
+
+(defn mk-constants-for-params
+  "creates constants from method parameters"
+  [^Context ctx ^Method m]
+  (let [types (.getParameterTypes m)
+        classes (.getParameterTypes m)
+        f (fn [^TypeVariable type ^Class class]
+            (try (let [name (.getName type)
+                  [sort _] (get-sort-for-class ctx class)]
+            [(keyword name) (.mkConst ctx name sort)]))
+            (catch IllegalArgumentException [nil nil]))]
+    (fzipmap f type classes)))
