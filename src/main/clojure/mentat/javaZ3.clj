@@ -1,7 +1,7 @@
 (ns mentat.javaZ3
   (:require [mentat.core :as mc ]
             [mentat.z3 :as z3])
-  (:import (java.lang.reflect Method Modifier Field) 
+  (:import (java.lang.reflect Method Modifier Field TypeVariable) 
            (com.microsoft.z3 Context Status Solver BoolExpr ArithExpr)
            (ar.com.maba.tesis.preconditions Pre ClassDefinition)
            (java.util.concurrent.atomic AtomicInteger AtomicLong AtomicBoolean)
