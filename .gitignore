@@ -13,3 +13,5 @@ pom.xml
 .classpath
 .lein-repl-history
 .settings
+*~
+*.mdown
