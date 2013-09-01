@@ -178,6 +178,6 @@
         f (fn [^TypeVariable type ^Class class]
             (try (let [name (.getName type)
                   [sort _] (get-sort-for-class ctx class)]
-            [(keyword name) (.mkConst ctx name sort)]))
-            (catch IllegalArgumentException [nil nil]))]
+            [(keyword name) (.mkConst ctx name sort)])
+            (catch IllegalArgumentException e [nil nil])))]
     (fzipmap f type classes)))
