@@ -3,6 +3,7 @@
   :url "http://example.com/FIXME"
   :source-paths ["src/main/clojure"]
   :java-source-paths ["src/main/java"]
+  :test-paths ["test" "src/test/clojure"]
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
