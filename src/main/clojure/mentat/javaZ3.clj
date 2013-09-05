@@ -1,5 +1,5 @@
 (ns mentat.javaZ3
-  (:require [mentat.core :as mc ]
+  (:require [mentat.core :as mc]
             [mentat.z3 :as z3])
   (:import (java.lang.reflect Method Modifier Field TypeVariable) 
            (com.microsoft.z3 Context Status Solver BoolExpr ArithExpr)
@@ -156,28 +156,16 @@
   ([^Context ctx o fields fvalues]
     (reduce #(assoc %1 (keyword (.getName %2)) (field-to-z3 o ctx %2)) {} fields)))
 
-(defn- fzipmap
-  "Returns a map with the keys mapped to the corresponding vals."
-  {:static true}
-  [f fkeys vals]
-    (loop [map {}
-           ks (seq keys)
-           vs (seq vals)]
-      (if (and ks vs)
-        (let [[k v] (f (first ks) (first vs))]
-          (recur (if (and k v) (assoc map k v) map)
-                 (next ks)
-                 (next vs)))
-        map)))
-
 (defn mk-constants-for-params
   "creates constants from method parameters"
   [^Context ctx ^Method m]
-  (let [types (.getParameterTypes m)
-        classes (.getParameterTypes m)
-        f (fn [^TypeVariable type ^Class class]
-            (try (let [name (.getName type)
-                  [sort _] (get-sort-for-class ctx class)]
-            [(keyword name) (.mkConst ctx name sort)])
-            (catch IllegalArgumentException e [nil nil])))]
-    (fzipmap f type classes)))
+  (let [classes (.getParameterTypes m)
+        f (fn [[params index] ^Class class] 
+            (try 
+              (let [[sort _] (get-sort-for-class ctx class)
+                    name (str "p" index) 
+                    key (keyword name) 
+                    const (.mkConst ctx name sort)]
+                [(assoc params key const ) (inc index)])
+            (catch IllegalArgumentException e [params (inc index)])))]
+    (first (reduce f [{} 0] classes))))

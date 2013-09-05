@@ -28,7 +28,7 @@
   "returns public methods that are not present on java.lang.Object"
   [c]
   (if (class? c) 
-    (filter #(and (not (contains? object-methods %)) (public? %)) (.getMethods c)) 
+    (filter #(and (not (contains? object-methods %)) (public? %) (not (.isBridge %))) (.getMethods c)) 
     (recur (class c))))
 
 (defn get-fields
@@ -78,8 +78,8 @@
         name (.name pre)] 
     (if (or (nil? pre) (not (.enabled pre)))
       nil 
-      {:pre (gen-fn pre-val)
-       :pre-expr (read-string pre-val)
+      {
+       :pre (read-string pre-val)
        :data (if-let [s (seq data-val)] 
                (gen-fn data-val) 
                nil-fn)
@@ -101,8 +101,3 @@
   "generates all method-infos"
   [methods]
   (vec (filter #(not (nil? %)) (map method-info methods))))
-
-(defn eval-pre
-  "evaluates all preconditions"
-  [value-map method-infos]
-  (map #(vector % (apply (:pre %) [value-map])) method-infos))

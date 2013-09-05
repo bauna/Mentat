@@ -31,21 +31,20 @@
 
 (defn ^Model get-model 
   "check sat on a Context"
-  [^Solver solver ^BoolExpr bool-expr]
-    (.add solver (into-array BoolExpr [bool-expr]))
-    (let [^Status status (.check solver)]
-      (case (.toInt status) 
-        1 (.getModel solver)
-        0 nil
-       -1 nil
-        (throw (IllegalArgumentException. (str "unknow Status: " status))))))
+  [^Solver solver]
+  (let [^Status status (.check solver)]
+    (case (.toInt status) 
+      1 (.getModel solver)
+      0 nil
+     -1 nil
+      (throw (IllegalArgumentException. (str "unknow Status: " status))))))
 
 (defn get-model-value
   [^Model model expr]
-  (if-let [value (.evaluate model expr false)] 
+  (if-let [value (.evaluate model expr false)]
     (cond 
       (.isIntNum value) (.getInt value)
-      (.isRealNum value) (.getReal value) 
+      (.isReal value) (.getReal value) 
       (.isRatNum value) (/ (.getInt (.getNumerator value)) (.getInt (.getDenominator value)))
       :else (throw (IllegalArgumentException. (str "unknow 'value' type: " value))))))
 
@@ -104,7 +103,6 @@
 
 (defmethod z3-single-symbol (symbol ">") 
   [ident-fn params symbols inst-state ^Context ctx]
-  (println ident-fn params symbols inst-state ctx)
   (.mkGt ctx 
     (z3-single-expr (first params) nil symbols inst-state ctx) 
     (z3-single-expr (second params) nil symbols inst-state ctx)))
@@ -163,7 +161,7 @@
   [ident-fn params symbols inst-state ^Context ctx]
   (if-let [z3-obj (symbols (keyword ident-fn))]
     z3-obj
-    (throw (IllegalArgumentException. (str "symbol: '" ident-fn "' unknow")))))
+    (throw (IllegalArgumentException. (str "symbol: '" ident-fn "' unknow\nsymbols: " symbols)))))
 
 ;-------------------------------------------------------------
 (defmulti z3-single-expr (fn [ident-fn params symbols inst-state ^Context ctx] (class ident-fn)))
