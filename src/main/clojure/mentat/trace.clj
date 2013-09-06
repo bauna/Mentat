@@ -44,11 +44,12 @@
   "checks is a method is enabled"
   [method-info instance inst-state fields]
   (let [ctx (z3/create-context)
-        z3-inst-consts (jz3/mk-instance ctx instance fields inst-state)
+        z3-inst-data (jz3/mk-instance ctx instance fields inst-state)
+        z3-inst-consts (reduce #(assoc %1 (first %2) (-> %2 second :const)) {} z3-inst-data)
         z3-params-consts (jz3/mk-constants-for-params ctx (:method method-info))
         solver (.mkSolver ctx)
         bool-expr (z3/z3 (:pre method-info) (merge z3-inst-consts z3-params-consts) inst-state ctx)]
-    (.add solver (into-array BoolExpr [bool-expr]))
+    (.add solver (into-array BoolExpr (flatten [bool-expr (map #(-> % second :exprs) z3-inst-data)])))
     (z3/sat? solver)))
 
 (defn get-enabled-methods
@@ -63,10 +64,11 @@
         method (:method method-info)
         z3-params-consts (jz3/mk-constants-for-params ctx method)]
     (if (empty? z3-params-consts) nil
-      (let [z3-inst-consts (jz3/mk-instance ctx instance fields inst-state)
+      (let [z3-inst-data (jz3/mk-instance ctx instance fields inst-state)
+            z3-inst-consts (reduce #(assoc %1 (first %2) (-> %2 second :const)) {} z3-inst-data)
             solver (.mkSolver ctx)
             bool-expr (z3/z3 (:pre method-info) (merge z3-inst-consts z3-params-consts) inst-state ctx)]
-        (.add solver (into-array BoolExpr [bool-expr]))
+        (.add solver (into-array BoolExpr (flatten [bool-expr (map #(-> % second :exprs) z3-inst-data)])))
         (loop [params-map (z3/model-to-map (z3/get-model solver) z3-params-consts)
                index 0
                count (-> method .getParameterTypes count)

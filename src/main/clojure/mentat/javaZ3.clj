@@ -62,17 +62,15 @@
   [^Context ctx ^Class klass] 
   [(.getRealSort ctx) #(.mkReal ctx (str %))])
 
-
-
 (defn def-list-field 
   [^Context ctx ^String name elems-sort const-fun array]
   (let [const (.mkArrayConst ctx name (.getIntSort ctx) elems-sort)
-        func (fn [idx val] 
+        func (fn [[exprs idx] val] 
                (let [val-expr (const-fun val)]
-                 (.mkEq ctx val-expr (.mkSelect ctx const (.mkInt ctx idx))))
-               (inc idx))]
-    (reduce func 0 array)
-    const))
+                 [(conj exprs (.mkEq ctx val-expr (.mkSelect ctx const (.mkInt ctx idx))))
+                  (inc idx)]))]
+    {:exprs (first (reduce func [[] 0] array))
+     :const const}))
 
 (defn def-java-util-list-field 
   [^Context ctx ^String name ^Field f ^List array] 
@@ -92,32 +90,32 @@
 (defn def-boolean-field
   [^Context ctx ^String name ^Boolean value]
    (let [const (.mkBoolConst ctx name)] 
-    (.mkEq ctx const (.mkBool ctx value))
-    const))
+    {:exprs (.mkEq ctx const (.mkBool ctx value))
+     :const const}))
   
 (defn def-int-field
   [^Context ctx ^String name ^long value]
    (let [const (.mkIntConst ctx name)] 
-    (.mkEq ctx const (.mkInt ctx (int value)))
-    const))
+    {:exprs [(.mkEq ctx const (.mkInt ctx (int value)))] 
+     :const const}))
 
 (defn def-long-field
   [^Context ctx ^String name ^long value]
    (let [const (.mkIntConst ctx name)] 
-    (.mkEq ctx const (.mkInt ctx (long value)))
-    const))
+    {:exprs(.mkEq ctx const (.mkInt ctx (long value)))
+     :const const}))
 
 (defn def-bigInt-field
   [^Context ctx ^String name ^String value]
    (let [const (.mkIntConst ctx name)] 
-    (.mkEq ctx const (.mkInt ctx value))
-    const))
+    {:exprs (.mkEq ctx const (.mkInt ctx value))
+     :const const}))
 
 (defn def-double-field
   [^Context ctx ^String name ^String value]
    (let [const (.mkRealConst ctx name)] 
-    (.mkEq ctx const (.mkReal ctx value))
-    const))
+    {:exprs (.mkEq ctx const (.mkReal ctx value))
+     :const const}))
 
 (defn field-to-z3 
   [o ^Context ctx ^Field f]
