@@ -7,7 +7,7 @@ import ar.com.maba.tesis.preconditions.ClassDefinition;
 import ar.com.maba.tesis.preconditions.Pre;
 
 @ClassDefinition(
-    builder = "(new ar.com.maba.tesis.collections.ArrayStack 3)", 
+    builder = "(new ar.com.maba.tesis.collections.ArrayStack 1)", 
     invariant = "(>= (:limit vs) (count (:stack vs)))")
 public class ArrayStack implements Stack<Integer> {
     private List<Integer> stack = new ArrayList<>();
@@ -21,12 +21,13 @@ public class ArrayStack implements Stack<Integer> {
      * @see ar.com.maba.tesis.collections.Stack#push(T)
      */
     @Override
-    @Pre(value = "(and (> p0 5) (> limit (eval (count stack))))")
-    public void push(Integer o) {
+//    @Pre(value = "(and (> p0 5) (> limit (eval (count stack))))")
+    @Pre(value = "(> limit (eval (count stack)))", data = "({:p0 (count stack)})")
+    public void push(Integer n) {
         if (limit == stack.size()) {
-            throw new IllegalStateException("Limit reached");
+            throw new IllegalStateException("Limit reached: " + limit);
         }
-        stack.add(o);
+        stack.add(n);
     }
 
     /**

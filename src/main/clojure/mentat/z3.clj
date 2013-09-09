@@ -51,7 +51,10 @@
 (defn model-to-map 
   "converts a z3 Model to map"
   [^Model model expressions]
-  (reduce #(assoc %1 (first %2) (get-model-value model (second %2))) {} expressions))
+  (reduce #(try 
+             (assoc %1 (first %2) (get-model-value model (second %2)))
+             (catch IllegalArgumentException e %1)) 
+          {} expressions))
 
 (def z3-single-expr)
 (def z3)
@@ -195,7 +198,6 @@
 
 (defmethod z3 clojure.lang.Sequential
   [expr symbols inst-state ^Context ctx]
-  
   (if-let [inner-expr (first expr)] 
     (if (seq? inner-expr)
       (z3 inner-expr)

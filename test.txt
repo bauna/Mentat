@@ -40,15 +40,24 @@ install z3 jar in lein repo:
   )
 (declare-const s1 (Stack Int))
 
-(require '[mentat.z3 :as z3])
+(require :reload '[mentat.core :as mc])
+(require :reload '[mentat.javaZ3 :as jz3])
+(require :reload '[mentat.z3 :as z3])
+(import '(com.microsoft.z3 Context Status Solver BoolExpr ArithExpr))
 (def ctx (z3/create-context))
-(def symbs {:o (z3/mk-int-const ctx "o")})
-(def inst-state {:limit 3 :stack [1 2]})
-(def expr1 (read-string "(and (< 3 o) (= 0 (mod o 2)))"))
-(def expr2 (read-string "(eval (= limit (count stack)))"))
+(def symbs {
+	:limit (jz3/def-int-field ctx "limit" 2) 
+	:stack (jz3/def-int-field ctx "stack" 2)
+	:p0 (.mkConst ctx "p0" (.getIntSort ctx))})
+(def inst-state {:limit 2 :stack [1 2]})
+(def expr2 (read-string "(and (> p0 5) (> limit (eval (count stack))))"))
+(def solver (z3/mk-solver ctx))
+(def bool-expr (z3/z3 expr2 symbs inst-state ctx))
+(.add solver (into-array BoolExpr [bool-expr]))
+(z3/sat? solver) 
+
 (def bool-expr1 (z3/z3 expr1 symbs inst-state ctx))
-(def bool-expr2 (z3/z3 expr2 symbs inst-state ctx))
-(def model1 (z3/get-model (z3/mkSolver ctx) bool-expr1))
+(def model1 (z3/get-model (z3/mkSolver ctx) bool-expr2))
 (def generated-params (z3/model-to-map model1 symbs))
 
 

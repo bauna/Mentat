@@ -80,9 +80,9 @@
       nil 
       {
        :pre (read-string pre-val)
-       :data (if-let [s (seq data-val)] 
-               (gen-fn data-val) 
-               nil-fn)
+       :data (if-not (empty? data-val) 
+               (binding [*read-eval* false] (read-string data-val)) 
+               nil)
        :method m
        :name (if (empty? name) (.getName m) name)})))
 

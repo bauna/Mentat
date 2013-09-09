@@ -69,7 +69,9 @@
             solver (.mkSolver ctx)
             bool-expr (z3/z3 (:pre method-info) (merge z3-inst-consts z3-params-consts) inst-state ctx)]
         (.add solver (into-array BoolExpr (flatten [bool-expr (map #(-> % second :exprs) z3-inst-data)])))
-        (loop [params-map (z3/model-to-map (z3/get-model solver) z3-params-consts)
+        (loop [params-map (merge
+                            (z3/model-to-map (z3/get-model solver) z3-params-consts)
+                            (apply (c/gen-fn-key (keys inst-state) (:data method-info)) [inst-state]))
                index 0
                count (-> method .getParameterTypes count)
                params []]
