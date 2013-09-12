@@ -65,7 +65,7 @@
   (let [def (.getAnnotation clazz ClassDefinition)
         invariant (.invariant def)]
     {:invariant (if (empty? invariant)
-                  (fn [_] true)
+                  (constantly true)
                   (gen-fn-key
                     (map #(-> % .getName keyword) (get-all-fields clazz))
                     (binding [*read-eval* false] (read-string invariant))))
