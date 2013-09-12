@@ -38,7 +38,7 @@
 (defn check-invariant 
   "checks whethet the invariant of the class is valid or not"
   [instance inv-fn fields]
-  (apply inv-fn [(c/get-field-values instance fields)]))
+  (inv-fn (c/get-field-values instance fields)))
 
 (defn enabled? 
   "checks is a method is enabled"

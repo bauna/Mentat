@@ -64,8 +64,13 @@
 (defn class-info
   "builds class info from a class annotated with @ClassDefinition"
   [^Class clazz]
-  (let [def (.getAnnotation clazz ClassDefinition)]
-    {:invariant (gen-fn (.invariant def)) 
+  (let [def (.getAnnotation clazz ClassDefinition)
+        invariant (.invariant def)]
+    {:invariant (if (empty? invariant)
+                  (fn [_] true)
+                  (gen-fn-key
+                    (map #(-> % .getName keyword) (get-all-fields clazz))
+                    (binding [*read-eval* false] (read-string invariant))))
      :builder (gen-builder-fn (.builder def))}))
 
 (defn method-info
