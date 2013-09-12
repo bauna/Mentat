@@ -79,7 +79,7 @@
             (recur params-map (inc index) count (conj params ((keyword (str "p" index)) params-map))) 
             params))))))
 
-(defn trace-fn2 
+(defn trace-fn
   "generate a new trace step on each invocation"
   [^Class clazz sel-fn]
   (let [cl-info (c/class-info clazz)
@@ -107,7 +107,7 @@
 
 (defn trace-gen
   "generate a trace of invocations "
-  ([^Class clazz sel-fn] (trace-gen (trace-fn2 clazz sel-fn)))
+  ([^Class clazz sel-fn] (trace-gen (trace-fn clazz sel-fn)))
   ([gen-fn] 
     (let [exec (gen-fn)] 
       (if-not (= :failed (second exec)) 
