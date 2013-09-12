@@ -59,8 +59,6 @@
   [fn-body]
   (eval (binding [*read-eval* false] (read-string (str "(fn [& args] " fn-body ")")))))
 
-(defn- nil-fn [& args] nil)
-
 (defn class-info
   "builds class info from a class annotated with @ClassDefinition"
   [^Class clazz]
