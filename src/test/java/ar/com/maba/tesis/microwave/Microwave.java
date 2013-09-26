@@ -1,0 +1,28 @@
+package ar.com.maba.tesis.microwave;
+
+
+public interface Microwave {
+
+    void start();
+
+    void start(Integer time);
+
+    void start(Integer time, Integer power);
+    
+    void stop();
+
+    void pause();
+    
+    void openDoor();
+
+    void closeDoor();
+
+//    boolean isOn();
+//    
+//    boolean isDoorOpened();
+//    
+//    long getTime();
+//    
+//    long getPower();
+//    
+}
