@@ -1,4 +1,5 @@
 (ns mentat.trace
+  (:use mentat.util)
   (:require [clojure.reflect :as r]
             [mentat.core :as c]
             [mentat.z3 :as z3]
