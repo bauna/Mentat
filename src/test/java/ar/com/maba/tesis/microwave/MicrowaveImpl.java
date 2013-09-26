@@ -39,9 +39,11 @@ public class MicrowaveImpl implements Microwave {
 	@Override
 	@Pre(value = "(and (not doorOpened) (not on) (> p0 0) (> p1 0))")
 	public void start(Integer time, Integer power) {
-		if (doorOpened || on) {
-			System.out.println("start(Integer time, Integer power)");
-			throw new IllegalStateException();
+		if (doorOpened) {
+			throw new IllegalStateException("cannot start with door open");
+		}
+		if (on) {
+			throw new IllegalStateException("it's already started");
 		}
 		on = true;
 		this.time = time;
