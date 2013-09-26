@@ -75,19 +75,18 @@
   [^Method m]
   "get the value of @Pre Annotation. 
    if it don't have the annotation returns 'false' so it never calls this method"
-  (let [pre (.getAnnotation m Pre) 
-        pre-val (.value pre) 
-        data-val (.data pre)
-        name (.name pre)] 
+  (let [pre (.getAnnotation m Pre)]
     (if (or (nil? pre) (not (.enabled pre)))
       nil 
-      {
-       :pre (read-string pre-val)
-       :data (if-not (empty? data-val) 
-               (binding [*read-eval* false] (read-string data-val)) 
-               nil)
-       :method m
-       :name (if (empty? name) (.getName m) name)})))
+      (let [pre-val (.value pre) 
+            data-val (.data pre)
+            name (.name pre)]
+	      {:pre (read-string pre-val)
+	       :data (if-not (empty? data-val) 
+	               (binding [*read-eval* false] (read-string data-val)) 
+	               nil)
+	       :method m
+	       :name (if (empty? name) (.getName m) name)}))))
 
 (defn methods-pre-fn
   "generates a map that containd a function for each method that contains @Pre annotation"
