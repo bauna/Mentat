@@ -30,6 +30,7 @@
   "invoke a object instance method if it throws an exception returns false or allows to specify a error value"
   ([o ^Method method params] (invoke-method o method params false))
   ([o ^Method method params error-result]
+    (println "will exec: " (.toString method))
     (let [fut (future (try 
         (.invoke method o (to-array params))
         true
@@ -97,20 +98,19 @@
             (if-let [sel (seq (sel-fn pres))]
               (let [mi (first sel)
                     oldm @lastm
+                    methods-status (reduce #(assoc %1 (:method (first %2)) (second %2)) (create-sorted-map) pres) 
                     newm (:method mi)
                     data-val (generate-params o mi inst-state fields)]
                 (reset! lastm newm)
-                (if (and (invoke-method o newm data-val) 
-                           (apply inv-fn [(c/get-field-values o fields)]))
-                      [oldm (reduce #(assoc %1 (:method (first %2)) (second %2)) 
-                                    (create-sorted-map) pres)]
-                      [oldm :failed])))))))))
+                (if (and (invoke-method o newm data-val) (check-invariant o inv-fn fields))
+                      [true [oldm methods-status]]
+                      [false (list [oldm methods-status] [newm :failed])])))))))))
 
 (defn trace-gen
   "generate a trace of invocations "
   ([^Class clazz sel-fn] (trace-gen (trace-fn clazz sel-fn)))
   ([gen-fn] 
-    (let [exec (gen-fn)] 
-      (if-not (= :failed (second exec)) 
-        (lazy-seq (cons exec (trace-gen gen-fn)))
-        (cons exec nil)))))
+    (let [[continue step] (gen-fn)] 
+      (if continue 
+        (lazy-seq (cons step (trace-gen gen-fn)))
+        step))))
