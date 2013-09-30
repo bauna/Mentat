@@ -17,6 +17,14 @@ public interface Microwave {
 
     void closeDoor();
 
+    boolean isDoorOpened();
+
+    long getPower();
+
+    long getTime();
+
+    boolean isOn();
+
 //    boolean isOn();
 //    
 //    boolean isDoorOpened();

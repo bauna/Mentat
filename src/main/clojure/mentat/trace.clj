@@ -1,5 +1,4 @@
 (ns mentat.trace
-  (:use mentat.util)
   (:require [clojure.reflect :as r]
             [mentat.core :as c]
             [mentat.z3 :as z3]
@@ -40,7 +39,10 @@
 (defn check-invariant 
   "checks whethet the invariant of the class is valid or not"
   [instance inv-fn fields]
-  (inv-fn (c/get-field-values instance fields)))
+  (println "check-invariant: " (c/get-field-values instance fields))
+  (let [r (inv-fn (c/get-field-values instance fields))]
+    (println "check.inv: " r)
+    r))
 
 (defn enabled? 
   "checks is a method is enabled"
@@ -92,7 +94,7 @@
         lastm (atom nil)]
     (fn [] 
       (if-not (check-invariant o inv-fn fields) 
-        [@lastm :failed]
+        [false [@lastm :failed]]
         (let [inst-state (c/get-field-values o fields)]
           (if-let [pres (seq (get-enabled-methods o mis inst-state fields))]
             (if-let [sel (seq (sel-fn pres))]

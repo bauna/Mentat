@@ -11,7 +11,7 @@
   (let [ksymb (mk-symb keys)
         vs (symbol "vs")]
     (eval `(fn [m#] 
-             (let [{:keys ~ksymb :as ~vs} m#] ~@body)))))
+             (let [{:keys ~ksymb :as ~vs} m#] ~@(list body))))))
 
 (defn interface?
   "returns if the class is an interface."

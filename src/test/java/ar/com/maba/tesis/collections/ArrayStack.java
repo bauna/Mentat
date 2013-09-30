@@ -22,7 +22,7 @@ public class ArrayStack implements Stack<Integer> {
      */
     @Override
 //    @Pre(value = "(and (> p0 5) (> limit (eval (count stack))))")
-    @Pre(value = "(> limit (eval (count stack)))", data = "({:p0 (count stack)})")
+    @Pre(value = "(> limit (eval (count stack)))", data = "{:p0 (count stack)}")
     public void push(Integer n) {
         if (limit == stack.size()) {
             throw new IllegalStateException("Limit reached: " + limit);

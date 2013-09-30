@@ -105,4 +105,33 @@ t100
 t100
 (pprint t100)
 
+;--------------------------------------------------------------
+        invariant = "(and (or (not on) (not doorOpened)) (or (not on) (and (> power 0) (> time 0))) (or on (and (= power 0) (= time 0))))")
+
+
+
+{:time 0, :power 0, :doorOpened false, :on false, :DEFAULT_POWER 900, :DEFAULT_TIME 30}
+(and (or true true) (or true (and false false)) (or false (and true true)))
+
+
+((gen-fn-key [:on :doorOpened :time :power] (read-string "(and (or (not on) (not doorOpened)) (or (not on) (and (> power 0) (> time 0))) (or on (and (= power 0) (= time 0))))")) {:on false :doorOpened false :time 0 :power 0})
+
+"(and (or (not on) (not doorOpened)) (or (not on) (and (> power 0) (> time 0))) (or on (and (= power 0) (= time 0))))"
+
+
+(c/gen-fn-key  (c/get-field-values o (c/get-fields MicrowaveImpl)))
+
+
+((c/gen-fn-key [:on :doorOpened :time :power] (read-string "(and (not on))")) (c/get-field-values o (c/get-fields MicrowaveImpl)))
+
+((c/gen-fn-key [:on :doorOpened :time :power] (read-string "(and (not on))")) {:time 0, :power 0, :doorOpened false, :on false, :DEFAULT_POWER 900, :DEFAULT_TIME 30})
+
+((c/gen-fn-key [:on :doorOpened :time :power] (read-string "(and (not on))")) {:time 0, :power 0, :doorOpened false, :on false, :DEFAULT_POWER 900, :DEFAULT_TIME 30})
+
+(def inv (c/gen-fn-key [:on :doorOpened :time :power] (read-string "(and (not on))")))
+
+(inv {:time 0, :power 0, :doorOpened false, :on false, :DEFAULT_POWER 900, :DEFAULT_TIME 30})
+
+
+(inv (c/get-field-values o (c/get-fields MicrowaveImpl)))
 

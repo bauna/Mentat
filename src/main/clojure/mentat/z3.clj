@@ -156,7 +156,7 @@
 
 (defmethod z3-single-symbol (symbol "eval")
   [ident-fn params symbols inst-state ^Context ctx]
-  (let [evalfn (mc/gen-fn-key (keys inst-state) params)
+  (let [evalfn (mc/gen-fn-key (keys inst-state) (first params))
         ret (evalfn inst-state)]
     (z3-single-expr ret nil symbol inst-state ctx)))
 
