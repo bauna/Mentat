@@ -74,6 +74,7 @@ public class MicrowaveImpl implements Microwave {
 		}
 		doorOpened = true;
 		on = false;
+		power = 0;
 	}
 
 	@Override
