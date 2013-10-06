@@ -89,7 +89,7 @@
   (let [cl-info (c/class-info clazz)
         o (apply (:builder cl-info) nil)
         fields (c/get-all-fields clazz)
-        inv-fn (:invariant cl-info)
+        inv-fn (c/gen-fn-key (map #(-> % .getName keyword) fields) (:invariant cl-info))
         mis (c/all-method-infos (c/public-methods o))
         lastm (atom nil)]
     (fn [] 
