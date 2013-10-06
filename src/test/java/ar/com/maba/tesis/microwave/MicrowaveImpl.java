@@ -7,7 +7,7 @@ import ar.com.maba.tesis.preconditions.Pre;
 	    builder = "(new ar.com.maba.tesis.microwave.MicrowaveImpl)", 
 	    invariant = "(and (or (not on) (not doorOpened)) " +
 	    		         "(or (not on) (and (> power 0) (> time 0))) " +
-	    		         "(or on (and (= power 0) (= time 0))))")
+	    		         "(or on (= power 0)))")
 //@ClassDefinition(
 //        builder = "(new ar.com.maba.tesis.microwave.MicrowaveImpl)", 
 //        invariant = "(and (u/==> on (not doorOpened)) " +
