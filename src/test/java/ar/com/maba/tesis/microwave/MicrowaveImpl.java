@@ -62,6 +62,7 @@ public class MicrowaveImpl implements Microwave {
 	@Pre(value = "(and on (> time 0) (> power 0))")
 	public void pause() {
 		on = false;
+		power = 0;
 	}
 
 	@Override
