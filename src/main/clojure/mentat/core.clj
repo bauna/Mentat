@@ -44,10 +44,17 @@
     (concat (get-fields c) 
            (get-all-fields (.getSuperclass c)))))
 
+(defn- get-val 
+  [^java.lang.reflect.Field f instance] 
+  (let [value (.get f instance)]
+    (if (instance? java.lang.Boolean value) 
+      (boolean value)
+      value)))
+
 (defn get-field-values
   [o fields]
   "creates a map where key are field names and key are the field values"
-  (reduce #(assoc %1 (keyword (.getName %2)) (.get %2 o)) {} fields))
+  (reduce #(assoc %1 (keyword (.getName %2)) (get-val %2 o)) {} fields))
 
 (defn gen-fn
   "convert a @Pre.value into a function"
