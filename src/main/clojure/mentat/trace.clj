@@ -9,7 +9,7 @@
 
 (defn random-sel
   "throw a coin an selects a method"
-  [pres]
+  [instance pres]
   (if-let [xs (seq (filter second pres))]
     (nth xs (rand-int (count xs))))) 
   
@@ -97,7 +97,7 @@
         [false [@lastm :failed]]
         (let [inst-state (c/get-field-values o fields)]
           (if-let [pres (seq (get-enabled-methods o mis inst-state fields))]
-            (if-let [sel (seq (sel-fn pres))]
+            (if-let [sel (seq (sel-fn o pres))]
               (let [mi (first sel)
                     oldm @lastm
                     methods-status (reduce #(assoc %1 (:method (first %2)) (second %2)) (create-sorted-map) pres) 

@@ -86,11 +86,13 @@ LD_LIBRARY_PATH=./native/ lein repl
 (require :reload '[mentat.z3 :as z3])
 (require :reload '[mentat.graph :as g])
 
+
+
 (def l (t/trace-gen ArrayStack t/random-sel))
 (def t100 (take 100 l))
 t100
 
-
+(import '(ar.com.maba.tesis.collections ArrayStack))
 (import '(ar.com.maba.tesis.microwave MicrowaveImpl))
 (import '(com.microsoft.z3 Context Status Solver))
 (import '(ar.com.maba.tesis.preconditions Pre ClassDefinition))
@@ -99,11 +101,33 @@ t100
 (require :reload '[mentat.trace :as t])
 (require :reload '[mentat.z3 :as z3])
 (require :reload '[mentat.graph :as g])
+(require :reload '[mentat.selDSL :as s])
 
 (def l (t/trace-gen MicrowaveImpl t/random-sel))
 (def t100 (take 100 l))
 t100
 (pprint t100)
+
+
+;--------------------------------------------------------------
+Selection function 
+(import '(ar.com.maba.tesis.collections ArrayStack))
+(import '(com.microsoft.z3 Context Status Solver))
+(use 'clojure.stacktrace)
+(require '[clojure.java.io :as io])
+(require :reload '[mentat.selDSL :as d])
+(require :reload '[mentat.z3 :as z3])
+(require :reload '[mentat.core :as c])
+(require :reload '[mentat.trace :as t])
+(require :reload '[mentat.graph :as g])
+(require :reload '[mentat.selDSL :as s])
+
+(def sel-fn (s/generate-selection-function ArrayStack (io/resource "mentat/arrayStackSel.edn")))
+
+(def l (t/trace-gen ArrayStack sel-fn))
+(def t100 (take 100 l))
+
+
 
 ;--------------------------------------------------------------
         invariant = "(and (or (not on) (not doorOpened)) (or (not on) (and (> power 0) (> time 0))) (or on (and (= power 0) (= time 0))))")
