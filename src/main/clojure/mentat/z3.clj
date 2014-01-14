@@ -196,6 +196,10 @@
 ;---------------------------------------------
 (defmulti z3 (fn [expr symbols inst-state ^Context ctx] (class expr)))
 
+(defmethod z3 clojure.lang.Symbol
+  [expr symbols inst-state ^Context ctx]
+  (z3 '(expr) symbols inst-state ^Context ctx))
+
 (defmethod z3 clojure.lang.Sequential
   [expr symbols inst-state ^Context ctx]
   (if-let [inner-expr (first expr)] 
