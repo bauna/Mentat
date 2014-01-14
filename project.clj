@@ -8,7 +8,8 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.flatland/ordered "1.5.1"]
-		 [com.microsoft/z3 "4.3.2.Uecceb0ac"]]
+                 [com.microsoft/z3 "4.3.2.Uecceb0ac"]
+                 [dorothy "0.0.4"]]
   :dev-dependencied [[no-man-is-an-island/lein-eclipse "2.0.0"]]
   :jvm-opts [~(str "-Djava.library.path=native/" 
                    (. System getProperty "path.separator") 

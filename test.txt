@@ -12,10 +12,7 @@
 
 (def g (g/build-dot-file t1000))
 
-(println g)
-
-en el beash: dot -Tpng pepe.txt > microwave.png
-
+(-> g dot show!)
 
 
 (def l (t/trace-fn a t/random-sel))
