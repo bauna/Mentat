@@ -14,6 +14,8 @@
 
 (println g)
 
+en el beash: dot -Tpng pepe.txt > microwave.png
+
 
 
 (def l (t/trace-fn a t/random-sel))
@@ -158,4 +160,20 @@ Selection function
 
 
 (inv (c/get-field-values o (c/get-fields MicrowaveImpl)))
+
+---------------------------
+
+(import '(ar.com.maba.tesis.atm AtmImpl))
+(import '(com.microsoft.z3 Context Status Solver))
+(import '(ar.com.maba.tesis.preconditions Pre ClassDefinition))
+(use 'clojure.stacktrace)
+(require :reload '[mentat.core :as c])
+(require :reload '[mentat.trace :as t])
+(require :reload '[mentat.z3 :as z3])
+(require :reload '[mentat.graph :as g])
+
+(def l (t/trace-gen AtmImpl t/random-sel))
+(def t100 (take 100 l))
+t100
+(pprint t100)
 
