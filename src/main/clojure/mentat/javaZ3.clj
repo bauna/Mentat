@@ -74,6 +74,7 @@
 
 (defn def-java-util-list-field 
   [^Context ctx ^String name ^Field f ^List array] 
+  ;(println ctx name f array (get-generic-type f))
   (let [[elems-sort const-fun] (get-sort-for-class ctx (get-generic-type f))] 
     (def-list-field ctx name elems-sort const-fun array)))
 
