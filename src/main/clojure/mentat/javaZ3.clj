@@ -9,7 +9,9 @@
 
 (defn get-generic-type 
   [^Field f]
-  (-> f .getGenericType .getActualTypeArguments (aget 0)))
+  (try  
+    (-> f .getGenericType .getActualTypeArguments (aget 0))
+    (catch java.lang.Throwable t java.lang.Integer)))
 
 (defmulti get-sort-for-class 
   (fn [^Context ctx ^Class klass] klass))
