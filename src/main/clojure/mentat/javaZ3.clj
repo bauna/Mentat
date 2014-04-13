@@ -147,7 +147,7 @@
 						 (= Double/TYPE field-type) (def-double-field ctx name (str v))
              (= (Class/forName "[Ljava.util.concurrent.atomic.AtomicBoolean;") field-type) (def-boolean-array-field ctx name v)
              (= (Class/forName "[Ljava.lang.Integer;") field-type) (def-int-array-field ctx name v)
-             (= List field-type) (def-java-util-list-field ctx name f v)
+             (.isAssignableFrom List field-type) (def-java-util-list-field ctx name f v)
              :else (throw (IllegalArgumentException. (str "unsupported field type: " field-type ", name: " name))))))
 
 (defn mk-instance
