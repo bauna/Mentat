@@ -40,7 +40,7 @@ public class NumbersToZ3 {
 	private List<Float> listFloat = new ArrayList<>(asList(new Float[] { 3.2F, 2.5F, 18.653F }));
 	private List<Double> listDouble = new ArrayList<>(asList(new Double[] { new Double(3.3), new Double(5.32), new Double(23.12) }));
 	private List<BigDecimal> listBigDecimal = new ArrayList<>(asList(new BigDecimal[] { BigDecimal.TEN, BigDecimal.ZERO }));
-	
+	private ar.com.maba.tesis.arrayList.ArrayList<Boolean> listBool2 = new ar.com.maba.tesis.arrayList.ArrayList<>(asList(new Boolean[] { true, true, false, true }));
 	private Integer[] arrayInt = { 1, 2, 3, 4 };
 
 //	private int[] listInt1 = { 1, 2, 3, 4 };
