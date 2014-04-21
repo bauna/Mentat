@@ -75,21 +75,7 @@ run lein to be able to use z3
 LD_LIBRARY_PATH=./native/ lein repl
 
 
------------------------------------
-(import '(ar.com.maba.tesis.collections ArrayStack))
-(import '(com.microsoft.z3 Context Status Solver))
-(import '(ar.com.maba.tesis.preconditions Pre ClassDefinition))
-(use 'clojure.stacktrace)
-(require :reload '[mentat.core :as c])
-(require :reload '[mentat.trace :as t])
-(require :reload '[mentat.z3 :as z3])
-(require :reload '[mentat.graph :as g])
-
-
-
-(def l (t/trace-gen ArrayStack t/random-sel))
-(def t100 (take 100 l))
-t100
+-------------------------------------------------------
 
 (import '(ar.com.maba.tesis.collections ArrayStack))
 (import '(ar.com.maba.tesis.microwave MicrowaveImpl))
@@ -108,23 +94,72 @@ t100
 (pprint t100)
 
 
+
+;-----------------------------------
+(import '(ar.com.maba.tesis.collections ArrayStack))
+(import '(com.microsoft.z3 Context Status Solver))
+(import '(ar.com.maba.tesis.preconditions Pre ClassDefinition))
+(use 'clojure.stacktrace)
+(require :reload '[mentat.core :as c])
+(require :reload '[mentat.trace :as t])
+(require :reload '[mentat.z3 :as z3])
+(require :reload '[dorothy.core :as d])
+(require :reload '[mentat.graph :as g])
+
+(def l (t/trace-gen ArrayStack t/random-sel))
+(def t100 (take 100 l))
+t100
+(def g (g/build-dot-file t100))
+(-> g d/dot (d/save! "arrayStack.png" {:format :png}))
+
+
+
+
 ;--------------------------------------------------------------
-Selection function 
 (import '(ar.com.maba.tesis.collections ArrayStack))
 (import '(com.microsoft.z3 Context Status Solver))
 (use 'clojure.stacktrace)
 (require '[clojure.java.io :as io])
-(require :reload '[mentat.selDSL :as d])
+(require :reload '[mentat.selDSL :as ds])
 (require :reload '[mentat.z3 :as z3])
 (require :reload '[mentat.core :as c])
 (require :reload '[mentat.trace :as t])
+(require :reload '[dorothy.core :as d])
 (require :reload '[mentat.graph :as g])
 (require :reload '[mentat.selDSL :as s])
 
 (def sel-fn (s/generate-selection-function ArrayStack (io/resource "mentat/arrayStackSel.edn")))
-
 (def l (t/trace-gen ArrayStack sel-fn))
 (def t100 (take 100 l))
+t100
+(def g (g/build-dot-file t100))
+(-> g d/dot (d/save! "arrayStackFS.png" {:format :png}))
+
+
+
+
+;--------------------------------------------------------------
+(import '(ar.com.maba.tesis.collections ArrayStack))
+(import '(com.microsoft.z3 Context Status Solver))
+(use 'clojure.stacktrace)
+(require '[clojure.java.io :as io])
+(require :reload '[mentat.selDSL :as ds])
+(require :reload '[mentat.z3 :as z3])
+(require :reload '[mentat.core :as c])
+(require :reload '[mentat.trace :as t])
+(require :reload '[dorothy.core :as d])
+(require :reload '[mentat.graph :as g])
+(require :reload '[mentat.selDSL :as s])
+
+(def sel-fn (s/generate-selection-function ArrayStack (io/resource "mentat/arrayStackSel.edn")))
+(def l (t/trace-gen ArrayStack sel-fn))
+(def t100 (take 100 l))
+t100
+(def g (g/build-dot-file t100))
+(-> g d/dot (d/save! "arrayStackFSBad.png" {:format :png}))
+
+
+
 
 
 
