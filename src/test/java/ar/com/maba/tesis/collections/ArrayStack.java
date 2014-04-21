@@ -21,7 +21,6 @@ public class ArrayStack implements Stack<Integer> {
      * @see ar.com.maba.tesis.collections.Stack#push(T)
      */
     @Override
-//    @Pre(value = "(and (> p0 5) (> limit (eval (count stack))))")
     @Pre(value = "(> limit (eval (count stack)))", data = "{:p0 (count stack)}")
     public void push(Integer n) {
         if (limit == stack.size()) {
