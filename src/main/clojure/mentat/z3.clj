@@ -41,12 +41,14 @@
 
 (defn get-model-value
   [^Model model expr]
-  (if-let [value (.evaluate model expr false)]
-    (cond 
-      (.isIntNum value) (.getInt value)
-      (.isReal value) (.getReal value) 
-      (.isRatNum value) (/ (.getInt (.getNumerator value)) (.getInt (.getDenominator value)))
-      :else (throw (IllegalArgumentException. (str "unknow 'value' type: " value))))))
+  
+  (if-not (nil? model) 
+    (if-let [value (.evaluate model expr false)]
+	    (cond 
+	      (.isIntNum value) (.getInt value)
+	      (.isReal value) (.getReal value) 
+	      (.isRatNum value) (/ (.getInt (.getNumerator value)) (.getInt (.getDenominator value)))
+	      :else (throw (IllegalArgumentException. (str "unknow 'value' type: " value)))))))
 
 (defn model-to-map 
   "converts a z3 Model to map"
