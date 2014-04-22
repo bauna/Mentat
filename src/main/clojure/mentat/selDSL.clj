@@ -26,12 +26,15 @@
 (defn choose-method 
   [instance fields script]
   (loop [n (count script)
-         script script]
-    (if (zero? n) nil 
+         script script
+         field-values (c/get-field-values instance fields)]
+    (println "n: " n " script: " script)
+    (println "field-values: " field-values)
+    (if-not (zero? n) 
       (let [step (first script)]
-        (if ((second step) (c/get-field-values instance fields))
+        (if ((second step) field-values)
           [(first step) script]
-          (recur (dec n) (rotate script)))))))
+          (recur (dec n) (rotate script) field-values))))))
 
 (defn generate-selection-function
   [^Class clazz ^URL config-file]
