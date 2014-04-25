@@ -4,16 +4,10 @@ import ar.com.maba.tesis.preconditions.ClassDefinition;
 import ar.com.maba.tesis.preconditions.Pre;
 
 @ClassDefinition(
-	    builder = "(new ar.com.maba.tesis.microwave.MicrowaveImpl)", 
-	    invariant = "(and (or (not on) (not doorOpened)) " +
-	    		         "(or (not on) (and (> power 0) (> time 0))) " +
-	    		         "(or on (= power 0)))")
-//@ClassDefinition(
-//        builder = "(new ar.com.maba.tesis.microwave.MicrowaveImpl)", 
-//        invariant = "(and (u/==> on (not doorOpened)) " +
-//                "(u/==> on (and (power > 0) (time > 0))) " +
-//        "(u/==> (not on) (and (= power 0) (= time 0))))")
-//@ClassDefinition(builder = "(new ar.com.maba.tesis.microwave.MicrowaveImpl)", invariant = "true")
+        builder = "(new ar.com.maba.tesis.microwave.MicrowaveImpl)",
+        invariant = "(and (==> on (not doorOpened)) " +
+                         "(==> on (and (> power 0) (> time 0))) " +
+                         "(==> (not on) (= power 0)))")
 public class MicrowaveImpl implements Microwave {
 	
 	private static Integer DEFAULT_TIME = 30;

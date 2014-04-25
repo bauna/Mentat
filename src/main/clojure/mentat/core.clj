@@ -1,7 +1,11 @@
 (ns mentat.core
-  (:require [clojure.reflect :as r])
+  (:require [clojure.reflect :as r]
+            [mentat.util :as u])
   (:import (java.lang.reflect Method Modifier Field) 
            (ar.com.maba.tesis.preconditions Pre ClassDefinition)))
+
+(defn- my-eval[form]
+  (binding [*ns* (the-ns 'mentat.util)] (eval form)))
 
 (defn mk-symb [xs]
   (map #(-> % name symbol) xs))
@@ -10,8 +14,8 @@
   [keys body]
   (let [ksymb (mk-symb keys)
         vs (symbol "vs")]
-    (eval `(fn [m#] 
-             (let [{:keys ~ksymb :as ~vs} m#] ~@(list body))))))
+    (my-eval `(fn [m#]
+                (let [{:keys ~ksymb :as ~vs} m#] ~@(list body))))))
 
 (defn interface?
   "returns if the class is an interface."
@@ -59,12 +63,13 @@
 (defn gen-fn
   "convert a @Pre.value into a function"
   [fn-body]
-  (eval (binding [*read-eval* false] (read-string (str "(fn [vs] " fn-body ")")))))
+  (binding [*ns* 'mentat.util]
+    (my-eval (binding [*read-eval* false] (read-string (str "(fn [vs] " fn-body ")"))))))
 
 (defn gen-builder-fn
   "convert a @Pre.value into a function"
   [fn-body]
-  (eval (binding [*read-eval* false] (read-string (str "(fn [& args] " fn-body ")")))))
+  (my-eval (binding [*read-eval* false] (read-string (str "(fn [& args] " fn-body ")")))))
 
 (defn class-info
   "builds class info from a class annotated with @ClassDefinition"
