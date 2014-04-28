@@ -8,9 +8,7 @@
 (require '[clojure.string :only (join) :as s])
 
 (def l (t/trace-gen ArrayStack t/random-sel))
-(def t1000 (take 1000 l))
-
-(def g (g/build-dot-file t1000))
+(def g (g/build-dot-file 1000 [l]))
 
 (-> g dot show!)
 
@@ -107,9 +105,7 @@ t100
 (require :reload '[mentat.graph :as g])
 
 (def l (t/trace-gen ArrayStack t/random-sel))
-(def t100 (take 100 l))
-t100
-(def g (g/build-dot-file t100))
+(def g (g/build-dot-file [l]))
 (-> g d/dot (d/save! "arrayStack.png" {:format :png}))
 
 
@@ -130,12 +126,8 @@ t100
 
 (def sel-fn (s/generate-selection-function ArrayStack (io/resource "mentat/arrayStackSel.edn")))
 (def l (t/trace-gen ArrayStack sel-fn))
-(def t100 (take 100 l))
-t100
-(def g (g/build-dot-file t100))
+(def g (g/build-dot-file [l]))
 (-> g d/dot (d/save! "arrayStackFS.png" {:format :png}))
-
-
 
 
 ;--------------------------------------------------------------
@@ -153,9 +145,7 @@ t100
 
 (def sel-fn (s/generate-selection-function ArrayStack (io/resource "mentat/arrayStackSel.edn")))
 (def l (t/trace-gen ArrayStack sel-fn))
-(def t100 (take 100 l))
-t100
-(def g (g/build-dot-file t100))
+(def g (g/build-dot-file [l]))
 (-> g d/dot (d/save! "arrayStackFSBad.png" {:format :png}))
 
 
