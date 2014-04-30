@@ -15,12 +15,12 @@
 
 (defn- failed? 
   [pre] 
-  (= :failed (second pre)))
+  (= :failed pre))
 
 (defn ^String state-name
   "generates a state name"
   [pre]
-  (if (failed? pre) :trap
+  (if (failed? pre) :TRAP
     (s/join "\\n" (map #(method-label (first %)) (filter second pre)))))
 
 (defn build-finite-state-machine
