@@ -200,7 +200,7 @@
 
 (defmethod z3 clojure.lang.Symbol
   [expr symbols inst-state ^Context ctx]
-  (z3 '(expr) symbols inst-state ^Context ctx))
+  (z3 (list expr) symbols inst-state ^Context ctx))
 
 (defmethod z3 clojure.lang.Sequential
   [expr symbols inst-state ^Context ctx]
