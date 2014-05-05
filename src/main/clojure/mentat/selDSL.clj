@@ -5,13 +5,17 @@
             [clojure.java.io :as io])
   (:import (java.net URL)))
 
-(defn while-tag-parser [keys while-body]
+(defn- while-tag-parser [keys while-body]
   (assert (<= 2 (count while-body)))
   (assert (string? (first while-body)))
-  [(first while-body) (c/gen-fn-key keys (second while-body))])
+  [::while (first while-body) (c/gen-fn-key keys (second while-body))])
+
+(defn- random-tag-parser [& _]
+  [::random])
 
 (defn tag-parsers [keys] 
-  {'mentat/while (partial while-tag-parser keys)})
+  {'mentat/while (partial while-tag-parser keys)
+   'mentat/random random-tag-parser})
 
 (defn read-config-file [keys ^URL config-file]
   (println keys)
@@ -28,13 +32,16 @@
   (loop [n (count script)
          script script
          field-values (c/get-field-values instance fields)]
-    (println "n: " n " script: " script)
-    (println "field-values: " field-values)
-    (if-not (zero? n) 
-      (let [step (first script)]
-        (if ((second step) field-values)
-          [(first step) script]
-          (recur (dec n) (rotate script) field-values))))))
+    (if (zero? n)
+      [nil script]
+      (let [[type & params] (first script)]
+        (println "type: " type " params: " params)
+        (cond
+          (= ::random type) [nil (rotate script)]
+          (= ::while type)
+            (if ((second params) field-values)
+              [(first params) script]
+              (recur (dec n) (rotate script) field-values)))))))
 
 (defn generate-selection-function
   [^Class clazz ^URL config-file]
@@ -42,9 +49,10 @@
         keys (map #(-> % .getName keyword) fields)
         script (atom (read-config-file keys config-file))]
     (fn [instance pres]
-      (if-let [ret (choose-method instance fields @script)]
-        (do 
-          (reset! script (second ret))
-          (let [method-name (first ret)
-                sel (filter #(= method-name (-> % first :name)) pres)]
-            (if (empty? sel) (t/random-sel instance pres) (first sel))))))))
+      (let [[method-name new-script] (choose-method instance fields @script)]
+        (do
+          (println "method-name: " method-name " new-script:" new-script)
+          (reset! script new-script)
+          (if-let [sel (and method-name (seq (filter #(= method-name (-> % first :name)) pres)))]
+            (first sel)
+            (t/random-sel instance pres)))))))

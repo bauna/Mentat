@@ -29,24 +29,24 @@
           mem-method-label (memoize method-label)
           gen-step (fn [[method state :as pres]] [(mem-state-name state) (mem-method-label method)])
           union #(let [s1 (if %1 %1 #{})] (if %2 (set/union s1 #{%2}) s1))
-          gen-state-machine (fn [trace] 
-                              (first (reduce 
-                                       (fn [[m curr-state :as _] pre] 
+          gen-state-machine (fn [trace]
+                              (first (reduce
+                                       (fn [[m curr-state :as _] pre]
                                          (let [[state-name label] (gen-step pre)
                                                transition [curr-state state-name]]
-                                           [(update-in m [transition] union label) state-name])) 
-                                       [(om/ordered-map) :start] trace)))] 
-      (reduce (fn [full-machine m] 
-                (reduce (fn [full-machine [k v :as _]] 
-                          (update-in full-machine [k] set/union v)) full-machine m)) 
+                                           [(update-in m [transition] union label) state-name]))
+                                       [(om/ordered-map) :start] trace)))]
+      (reduce (fn [full-machine m]
+                (reduce (fn [full-machine [k v :as _]]
+                          (update-in full-machine [k] set/union v)) full-machine m))
               (map #(gen-state-machine (take max-steps %)) traces)))))
 
-(def ^:dynamic *max-steps* 100) 
+(def ^:dynamic *max-steps* 100)
 
 (defn build-dot-file
   ([traces] (build-dot-file *max-steps* traces))
   ([max-steps traces] (let [transitions (build-finite-state-machine max-steps traces)]
-     (d/digraph (into [{:rankdir "LR"} [:start {:shape "doublecircle"}]] 
-                      (map (fn [[transition labels :as _]] 
-                             (conj transition (if (empty? labels) {} {:label (s/join "\\n" labels)}))) 
+     (d/digraph (into [{:rankdir "LR"} [:start {:shape "doublecircle"}]]
+                      (map (fn [[transition labels :as _]]
+                             (conj transition (if (empty? labels) {} {:label (s/join "\\n" labels)})))
                            transitions))))))

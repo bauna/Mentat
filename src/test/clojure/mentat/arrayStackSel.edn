@@ -1,2 +1,3 @@
-[#mentat/while ("push" (< (count stack) limit)) 
+[#mentat/while ("push" (< (count stack) limit))
+ #mentat/random  
  #mentat/while ("pop" (= (count stack) limit))]
