@@ -853,49 +853,49 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * An optimized version of AbstractList.ListItr
      */
-    @ClassDefinition(builder="(let [a (doto (ar.com.maba.tesis.arrayList.ArrayList.) (.add 1) (.add 2) (.add 3))] (.listIterator a))")
+    @ClassDefinition(builder="(let [a (doto (ar.com.maba.tesis.arrayList.ArrayList.) (.add 1) (.add 2) (.add 3))] (.listIterator a))",
+    		invariant = "(and " +
+    				"(or (= lastRet -1) (>= lastRet 0)) " +
+    				"(and (<= 0 cursor) (<= cursor (count this$0))))")
     public class ListItr extends Itr implements ListIterator<E> {
         ListItr(int index) {
             super();
             cursor = index;
         }
 
-        @Pre(value = "(true)")
         public boolean hasPrevious() {
             return cursor != 0;
         }
 
-        @Pre(value = "(true)")
         public int nextIndex() {
             return cursor;
         }
 
-        @Pre(value = "(true)")
+        @Pre(value = "(> cursor 0)")
         public int previousIndex() {
             return cursor - 1;
         }
 
         @Override
-        @Pre(value = "(true)")
 		public boolean hasNext() {
 			return super.hasNext();
 		}
 
 		@Override
-        @Pre(value = "(true)")
+        @Pre(value = "(< cursor (eval(count this$0)))")
 		public E next() {
 			return super.next();
 		}
 
 		@Override
-        @Pre(value = "(true)")
+        @Pre("(>= lastRet 0)")
 		public void remove() {
 			super.remove();
 		}
 
 		@SuppressWarnings("unchecked")
-        @Pre(value = "(true)")
-        public E previous() {
+		@Pre(value = "(> cursor 0)")
+		public E previous() {
             checkForComodification();
             int i = cursor - 1;
             if (i < 0)
@@ -907,7 +907,11 @@ public class ArrayList<E> extends AbstractList<E>
             return (E) elementData[lastRet = i];
         }
 
-        @Pre(value = "(true)")
+        @Pre("(and (>= lastRet 0) (> p0 10))")
+        public void setNumber(Integer integer) {
+        	set((E)integer);
+        }
+
         public void set(E e) {
             if (lastRet < 0)
                 throw new IllegalStateException();
@@ -920,7 +924,11 @@ public class ArrayList<E> extends AbstractList<E>
             }
         }
 
-        @Pre(value = "(true)")
+        @Pre("(> p0 0)")
+        public void addNumber(Integer integer) {
+        	add((E)integer);
+        }
+
         public void add(E e) {
             checkForComodification();
 
