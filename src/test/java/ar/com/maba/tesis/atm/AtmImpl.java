@@ -76,8 +76,7 @@ public class AtmImpl implements Atm {
 	@Override
 	@Pre(value = "(authenticated)")
 	public void printTicket() {
-		// TODO Auto-generated method stub
-		
+		checkAuthenticated();
 	}
 
 }
