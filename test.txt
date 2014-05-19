@@ -80,15 +80,18 @@ LD_LIBRARY_PATH=./native/ lein repl
 (import '(com.microsoft.z3 Context Status Solver))
 (import '(ar.com.maba.tesis.preconditions Pre ClassDefinition))
 (use 'clojure.stacktrace)
+(require '[clojure.java.io :as io])
+(require '[dorothy.core :as d])
 (require :reload '[mentat.core :as c])
 (require :reload '[mentat.trace :as t])
 (require :reload '[mentat.z3 :as z3])
 (require :reload '[mentat.graph :as g])
 (require :reload '[mentat.selDSL :as s])
 
+(def sel-fn (s/generate-selection-function MicrowaveImpl (io/resource "mentat/microwaveTrapSel.edn")))
 (def l (t/trace-gen MicrowaveImpl t/random-sel))
 (def g (g/build-dot-file [l]))
-(-> g d/dot (d/save! "microwave.png" {:format :png}))
+(-> g d/dot (d/save! "microwave1.eps" {:format :eps}))
 
 
 ;-----------------------------------
@@ -209,15 +212,18 @@ LD_LIBRARY_PATH=./native/ lein repl
 (import '(com.microsoft.z3 Context Status Solver))
 (import '(ar.com.maba.tesis.preconditions Pre ClassDefinition))
 (use 'clojure.stacktrace)
+(require '[clojure.java.io :as io])
+(require :reload '[mentat.selDSL :as ds])
+(require :reload '[mentat.z3 :as z3])
 (require :reload '[mentat.core :as c])
 (require :reload '[mentat.trace :as t])
-(require :reload '[mentat.z3 :as z3])
+(require :reload '[dorothy.core :as d])
 (require :reload '[mentat.graph :as g])
+(require :reload '[mentat.selDSL :as s])
 
 (def l (t/trace-gen AtmImpl t/random-sel))
-(def t100 (take 100 l))
-t100
-(pprint t100)
+(def g (g/build-dot-file [l]))
+(-> g d/dot (d/save! "atm-epa.eps" {:format :eps}))
 
 ----------------------------------
 
@@ -233,4 +239,4 @@ t100
 
 (def l (t/trace-gen ArrayList$ListItr t/random-sel))
 (def g (g/build-dot-file [l]))
-(-> g d/dot (d/save! "arrayListIterator.png" {:format :png}))
+(-> g d/dot (d/save! "listIter-epa.eps" {:format :eps}))
