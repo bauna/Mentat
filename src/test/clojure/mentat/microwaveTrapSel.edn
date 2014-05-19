@@ -1,0 +1,2 @@
+[#mentat/while ("start" (not on))
+ #mentat/while ("openDoor" on)]
