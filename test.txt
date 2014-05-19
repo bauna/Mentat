@@ -87,10 +87,8 @@ LD_LIBRARY_PATH=./native/ lein repl
 (require :reload '[mentat.selDSL :as s])
 
 (def l (t/trace-gen MicrowaveImpl t/random-sel))
-(def t100 (take 100 l))
-t100
-(pprint t100)
-
+(def g (g/build-dot-file [l]))
+(-> g d/dot (d/save! "microwave.png" {:format :png}))
 
 
 ;-----------------------------------
