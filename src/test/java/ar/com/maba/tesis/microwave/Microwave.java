@@ -24,13 +24,4 @@ public interface Microwave {
     long getTime();
 
     boolean isOn();
-
-//    boolean isOn();
-//    
-//    boolean isDoorOpened();
-//    
-//    long getTime();
-//    
-//    long getPower();
-//    
 }
