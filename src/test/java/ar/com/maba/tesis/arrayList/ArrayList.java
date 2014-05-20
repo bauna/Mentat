@@ -871,7 +871,7 @@ public class ArrayList<E> extends AbstractList<E>
             return cursor;
         }
 
-        @Pre(value = "(> cursor 0)")
+        @Pre("(> cursor 0)")
         public int previousIndex() {
             return cursor - 1;
         }
@@ -882,7 +882,7 @@ public class ArrayList<E> extends AbstractList<E>
 		}
 
 		@Override
-        @Pre(value = "(< cursor (eval(.size this$0)))")
+        @Pre("(< cursor (eval(.size this$0)))")
 		public E next() {
 			return super.next();
 		}
@@ -894,7 +894,7 @@ public class ArrayList<E> extends AbstractList<E>
 		}
 
 		@SuppressWarnings("unchecked")
-		@Pre(value = "(> cursor 0)")
+		@Pre("(> cursor 0)")
 		public E previous() {
             checkForComodification();
             int i = cursor - 1;

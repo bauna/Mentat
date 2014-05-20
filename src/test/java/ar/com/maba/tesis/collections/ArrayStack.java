@@ -33,7 +33,7 @@ public class ArrayStack implements Stack<Integer> {
      * @see ar.com.maba.tesis.collections.Stack#pop()
      */
     @Override
-    @Pre(value = "(< 0 (eval (count stack)))")
+    @Pre("(< 0 (eval (count stack)))")
     public Integer pop() {
         if (stack.isEmpty()) {
             throw new IllegalStateException("Stack is empty");
@@ -42,7 +42,6 @@ public class ArrayStack implements Stack<Integer> {
     }
 
     @Override
-    @Pre(enabled = false)
     public String toString() {
         return stack.toString();
     }

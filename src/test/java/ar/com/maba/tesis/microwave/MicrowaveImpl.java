@@ -45,7 +45,7 @@ public class MicrowaveImpl implements Microwave {
 	}
 
 	@Override
-	@Pre(value = "(and on (> time 0) (> power 0))")
+	@Pre("(and on (> time 0) (> power 0))")
 	public void stop() {
 		on = false;
 		time = 0;
@@ -53,14 +53,14 @@ public class MicrowaveImpl implements Microwave {
 	}
 
 	@Override
-	@Pre(value = "(and on (> time 0) (> power 0))")
+	@Pre("(and on (> time 0) (> power 0))")
 	public void pause() {
 		on = false;
 		power = 0;
 	}
 
 	@Override
-	@Pre(value = "(not doorOpened)")
+	@Pre("(not doorOpened)")
 	public void openDoor() {
 		if (doorOpened) {
 			System.out.println("openDoor()");
@@ -72,7 +72,7 @@ public class MicrowaveImpl implements Microwave {
 	}
 
 	@Override
-	@Pre(value = "(doorOpened)")
+	@Pre("(doorOpened)")
 	public void closeDoor() {
 		if (!doorOpened) {
 			System.out.println("closeDoor()");

@@ -8,7 +8,6 @@ import ar.com.maba.tesis.preconditions.Pre;
 	    invariant = "(or cardInside (not authenticated)) ")
 
 public class AtmImpl implements Atm {
-	
 	private boolean authenticated = false;
 	private boolean cardInside = false;
 	
@@ -35,10 +34,9 @@ public class AtmImpl implements Atm {
 			throw new IllegalStateException("card must not be inserted");
 		}
 	}
-	
 
 	@Override
-	@Pre(value = "(and cardInside (not authenticated))")
+	@Pre("(and cardInside (not authenticated))")
 	public void authenticate() {
 		checkCardInside();
 		checkNotAuthenticated();
@@ -46,21 +44,21 @@ public class AtmImpl implements Atm {
 	}
 
 	@Override
-	@Pre(value = "(authenticated)")
+	@Pre("(authenticated)")
 	public void finish() {
 		checkAuthenticated();
 		authenticated = false;
 	}
 
 	@Override
-	@Pre(value = "(not cardInside)")
+	@Pre("(not cardInside)")
 	public void insertCard() {
 		checkCardNotInside();
 		cardInside = true;
 	}
 
 	@Override
-	@Pre(value = "(and (not authenticated) cardInside)")
+	@Pre("(and (not authenticated) cardInside)")
 	public void removeCard() {
 		checkNotAuthenticated();
 		checkCardInside();
@@ -68,15 +66,14 @@ public class AtmImpl implements Atm {
 	}
 
 	@Override
-	@Pre(value = "(authenticated)")
+	@Pre("(authenticated)")
 	public void operate() {
 		checkAuthenticated();
 	}
 
 	@Override
-	@Pre(value = "(authenticated)")
+	@Pre("(authenticated)")
 	public void printTicket() {
 		checkAuthenticated();
 	}
-
 }
