@@ -69,21 +69,23 @@
   (let [ctx (z3/create-context)
         method (:method method-info)
         z3-params-consts (jz3/mk-constants-for-params ctx method)]
-    (if (empty? z3-params-consts) nil
-      (let [z3-inst-data (jz3/mk-instance ctx instance fields inst-state)
-            z3-inst-consts (reduce #(assoc %1 (first %2) (-> %2 second :const)) {} z3-inst-data)
-            solver (.mkSolver ctx)
-            bool-expr (z3/z3 (:pre method-info) (merge z3-inst-consts z3-params-consts) inst-state ctx)]
-        (.add solver (into-array BoolExpr (flatten [bool-expr (map #(-> % second :exprs) z3-inst-data)])))
-        (loop [params-map (merge
-                            (z3/model-to-map (z3/get-model solver) z3-params-consts)
-                            (apply (c/gen-fn-key (keys inst-state) (:data method-info)) [inst-state]))
-               index 0
-               count (-> method .getParameterTypes count)
-               params []]
-          (if (< index count) 
-            (recur params-map (inc index) count (conj params ((keyword (str "p" index)) params-map))) 
-            params))))))
+    (try
+      (if (empty? z3-params-consts) nil
+        (let [z3-inst-data (jz3/mk-instance ctx instance fields inst-state)
+              z3-inst-consts (reduce #(assoc %1 (first %2) (-> %2 second :const)) {} z3-inst-data)
+              solver (.mkSolver ctx)
+              bool-expr (z3/z3 (:pre method-info) (merge z3-inst-consts z3-params-consts) inst-state ctx)]
+          (.add solver (into-array BoolExpr (flatten [bool-expr (map #(-> % second :exprs) z3-inst-data)])))
+          (loop [params-map (merge
+                              (z3/model-to-map (z3/get-model solver) z3-params-consts)
+                              (apply (c/gen-fn-key (keys inst-state) (:data method-info)) [inst-state]))
+                 index 0
+                 count (-> method .getParameterTypes count)
+                 params []]
+            (if (< index count)
+              (recur params-map (inc index) count (conj params ((keyword (str "p" index)) params-map)))
+              params))))
+    (finally (.dispose ctx)))))
 
 (defn trace-fn
   "generate a new trace step on each invocation"
