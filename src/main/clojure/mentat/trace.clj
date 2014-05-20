@@ -39,7 +39,7 @@
 (defn check-invariant 
   "checks whethet the invariant of the class is valid or not"
   [instance inv-fn fields]
-  (println "check-invariant: " (c/get-field-values instance fields))
+  ;(println "check-invariant: " (c/get-field-values instance fields))
   (let [r (inv-fn (c/get-field-values instance fields))]
     (println "check.inv: " r)
     r))
