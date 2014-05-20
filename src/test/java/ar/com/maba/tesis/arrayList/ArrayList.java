@@ -856,7 +856,7 @@ public class ArrayList<E> extends AbstractList<E>
     @ClassDefinition(builder="(let [a (doto (ar.com.maba.tesis.arrayList.ArrayList.) (.add 1) (.add 2) (.add 3))] (.listIterator a))",
     		invariant = "(and " +
     				"(or (= lastRet -1) (>= lastRet 0)) " +
-    				"(and (<= 0 cursor) (<= cursor (count this$0))))")
+    				"(and (<= 0 cursor) (<= cursor (.size this$0))))")
     public class ListItr extends Itr implements ListIterator<E> {
         ListItr(int index) {
             super();
@@ -882,7 +882,7 @@ public class ArrayList<E> extends AbstractList<E>
 		}
 
 		@Override
-        @Pre(value = "(< cursor (eval(count this$0)))")
+        @Pre(value = "(< cursor (eval(.size this$0)))")
 		public E next() {
 			return super.next();
 		}
