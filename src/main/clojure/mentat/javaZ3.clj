@@ -90,6 +90,22 @@
   (let [[elems-sort const-fun] (get-sort-for-class ctx java.lang.Integer)] 
     (def-list-field ctx name elems-sort const-fun array)))
 
+(defn def-long-array-field
+  [^Context ctx ^String name array]
+  (let [[elems-sort const-fun] (get-sort-for-class ctx java.lang.Long)] 
+    (def-list-field ctx name elems-sort const-fun array)))
+
+(defn def-float-array-field
+  [^Context ctx ^String name array]
+  (let [[elems-sort const-fun] (get-sort-for-class ctx java.lang.Float)] 
+    (def-list-field ctx name elems-sort const-fun array)))
+
+(defn def-double-array-field
+  [^Context ctx ^String name  array]
+  (let [[elems-sort const-fun] (get-sort-for-class ctx java.lang.Double)] 
+    (def-list-field ctx name elems-sort const-fun array)))
+
+
 (defn def-boolean-field
   [^Context ctx ^String name ^Boolean value]
    (let [const (.mkBoolConst ctx name)] 
@@ -147,6 +163,12 @@
 						 (= Double/TYPE field-type) (def-double-field ctx name (str v))
              (= (Class/forName "[Ljava.util.concurrent.atomic.AtomicBoolean;") field-type) (def-boolean-array-field ctx name v)
              (= (Class/forName "[Ljava.lang.Integer;") field-type) (def-int-array-field ctx name v)
+             (= (Class/forName "[I") field-type) (def-int-array-field ctx name v)
+             (= (Class/forName "[B") field-type) (def-int-array-field ctx name v)
+             (= (Class/forName "[J") field-type) (def-long-array-field ctx name v)
+             (= (Class/forName "[Z") field-type) (def-boolean-array-field ctx name v)
+             (= (Class/forName "[F") field-type) (def-float-array-field ctx name v)
+             (= (Class/forName "[D") field-type) (def-double-array-field ctx name v)
              (.isAssignableFrom List field-type) (def-java-util-list-field ctx name f v)
              :else (throw (IllegalArgumentException. (str "unsupported field type: " field-type ", name: " name))))))
 

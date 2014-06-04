@@ -43,6 +43,11 @@ public class NumbersToZ3 {
 	private ar.com.maba.tesis.arrayList.ArrayList<Boolean> listBool2 = new ar.com.maba.tesis.arrayList.ArrayList<>(asList(new Boolean[] { true, true, false, true }));
 	private Integer[] arrayInt = { 1, 2, 3, 4 };
 
-//	private int[] listInt1 = { 1, 2, 3, 4 };
+	private boolean[] listBoll = { true , false };
+	private int[] listInt1 = { 1, 2, 3, 4 };
+	private byte[] listByte1 = { 1, 2, 3, 4 };
+	private long[] listLong1 = { 1, 2, 3, 4 };
+	private float[] listFloat1 = { 1, 2, 3, 4 };
+	private double[] listDouble1 = { 1, 2, 3, 4 };
 
 }
