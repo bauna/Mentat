@@ -5,7 +5,7 @@
            (com.microsoft.z3 Context Status Solver BoolExpr ArithExpr)
            (ar.com.maba.tesis.preconditions Pre ClassDefinition)
            (java.util.concurrent.atomic AtomicInteger AtomicLong AtomicBoolean)
-           (java.util Set List)))
+           (java.util Set List Collection)))
 
 (defn get-generic-type 
   [^Field f]
@@ -75,10 +75,10 @@
      :const const}))
 
 (defn def-java-util-list-field 
-  [^Context ctx ^String name ^Field f ^List array] 
+  [^Context ctx ^String name ^Field f ^Collection coll] 
   ;(println ctx name f array (get-generic-type f))
   (let [[elems-sort const-fun] (get-sort-for-class ctx (get-generic-type f))] 
-    (def-list-field ctx name elems-sort const-fun array)))
+    (def-list-field ctx name elems-sort const-fun coll)))
 
 (defn def-boolean-array-field
   [^Context ctx ^String name ^List array]
@@ -141,36 +141,36 @@
   (let [field-type (.getType f)
         name (.getName f)
         v (.get f o)]
-           (cond
-             (= java.lang.Boolean field-type) (def-boolean-field ctx name v)
-						 (= java.util.concurrent.atomic.AtomicBoolean field-type) (def-boolean-field ctx name (.get v))
-						 (= java.lang.Byte field-type) (def-int-field ctx name v)
-						 (= java.lang.Short field-type) (def-int-field ctx name v)
-						 (= java.lang.Integer field-type) (def-int-field ctx name v)
-						 (= java.util.concurrent.atomic.AtomicInteger field-type) (def-int-field ctx name (.get v))
-						 (= java.lang.Long field-type) (def-long-field ctx name v)
-						 (= java.util.concurrent.atomic.AtomicLong field-type) (def-long-field ctx name (.get v))
-						 (= java.math.BigInteger field-type) (def-bigInt-field ctx name (str v))
-						 (= java.lang.Float field-type) (def-double-field ctx name (str v))
-						 (= java.lang.Double field-type) (def-double-field ctx name (str v))
-						 (= java.math.BigDecimal field-type) (def-double-field ctx name (str v))
-						 (= Boolean/TYPE field-type) (def-boolean-field ctx name v)
-						 (= Byte/TYPE field-type) (def-int-field ctx name v)
-						 (= Short/TYPE field-type) (def-int-field ctx name v)
-						 (= Integer/TYPE field-type) (def-int-field ctx name v)
-						 (= Long/TYPE field-type) (def-long-field ctx name v)
-						 (= Float/TYPE field-type) (def-double-field ctx name (str v))
-						 (= Double/TYPE field-type) (def-double-field ctx name (str v))
-             (= (Class/forName "[Ljava.util.concurrent.atomic.AtomicBoolean;") field-type) (def-boolean-array-field ctx name v)
-             (= (Class/forName "[Ljava.lang.Integer;") field-type) (def-int-array-field ctx name v)
-             (= (Class/forName "[I") field-type) (def-int-array-field ctx name v)
-             (= (Class/forName "[B") field-type) (def-int-array-field ctx name v)
-             (= (Class/forName "[J") field-type) (def-long-array-field ctx name v)
-             (= (Class/forName "[Z") field-type) (def-boolean-array-field ctx name v)
-             (= (Class/forName "[F") field-type) (def-float-array-field ctx name v)
-             (= (Class/forName "[D") field-type) (def-double-array-field ctx name v)
-             (.isAssignableFrom List field-type) (def-java-util-list-field ctx name f v)
-             :else (throw (IllegalArgumentException. (str "unsupported field type: " field-type ", name: " name))))))
+    (if (instance? Collection v)
+      (def-java-util-list-field ctx name f v)
+      (condp = field-type
+        java.lang.Boolean (def-boolean-field ctx name v)
+	      java.util.concurrent.atomic.AtomicBoolean (def-boolean-field ctx name (.get v))
+	      java.lang.Byte (def-int-field ctx name v)
+	      java.lang.Short (def-int-field ctx name v)
+	      java.lang.Integer (def-int-field ctx name v)
+	      java.util.concurrent.atomic.AtomicInteger (def-int-field ctx name (.get v))
+	      java.lang.Long (def-long-field ctx name v)
+	      java.util.concurrent.atomic.AtomicLong  (def-long-field ctx name (.get v))
+	      java.math.BigInteger  (def-bigInt-field ctx name (str v))
+	      java.lang.Float (def-double-field ctx name (str v))
+	      java.lang.Double (def-double-field ctx name (str v))
+	      java.math.BigDecimal (def-double-field ctx name (str v))
+	      Boolean/TYPE (def-boolean-field ctx name v)
+	      Byte/TYPE (def-int-field ctx name v)
+	      Short/TYPE  (def-int-field ctx name v)
+	      Integer/TYPE (def-int-field ctx name v)
+	      Long/TYPE (def-long-field ctx name v)
+	      Float/TYPE (def-double-field ctx name (str v))
+	      Double/TYPE (def-double-field ctx name (str v))
+	      (Class/forName "[Ljava.util.concurrent.atomic.AtomicBoolean;")  (def-boolean-array-field ctx name v)
+	      (Class/forName "[Ljava.lang.Integer;")  (def-int-array-field ctx name v)
+	      (Class/forName "[I")  (def-int-array-field ctx name v)
+	      (Class/forName "[B")  (def-int-array-field ctx name v)
+	      (Class/forName "[J")  (def-long-array-field ctx name v)
+	      (Class/forName "[Z")  (def-boolean-array-field ctx name v)
+	      (Class/forName "[F")  (def-float-array-field ctx name v)
+	      (Class/forName "[D")  (def-double-array-field ctx name v)))))
 
 (defn mk-instance
   "create a constant in the context for each instance field setting the value of the constant"

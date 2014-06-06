@@ -5,10 +5,9 @@ import static java.util.Arrays.asList;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class NumbersToZ3 {
@@ -40,6 +39,7 @@ public class NumbersToZ3 {
 	private List<Float> listFloat = new ArrayList<>(asList(new Float[] { 3.2F, 2.5F, 18.653F }));
 	private List<Double> listDouble = new ArrayList<>(asList(new Double[] { new Double(3.3), new Double(5.32), new Double(23.12) }));
 	private List<BigDecimal> listBigDecimal = new ArrayList<>(asList(new BigDecimal[] { BigDecimal.TEN, BigDecimal.ZERO }));
+	
 	private ar.com.maba.tesis.arrayList.ArrayList<Boolean> listBool2 = new ar.com.maba.tesis.arrayList.ArrayList<>(asList(new Boolean[] { true, true, false, true }));
 	private Integer[] arrayInt = { 1, 2, 3, 4 };
 
@@ -50,4 +50,7 @@ public class NumbersToZ3 {
 	private float[] listFloat1 = { 1, 2, 3, 4 };
 	private double[] listDouble1 = { 1, 2, 3, 4 };
 
+	private Set<Boolean> setBool = new HashSet<>(asList(new Boolean[] { Boolean.TRUE, Boolean.FALSE }));
+	private Set<Integer> setInteger = new HashSet<>(asList(new Integer[] { 1, 2 }));
+	
 }
