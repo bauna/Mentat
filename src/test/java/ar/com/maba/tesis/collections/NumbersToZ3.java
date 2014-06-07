@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +52,6 @@ public class NumbersToZ3 {
 	private double[] listDouble1 = { 1, 2, 3, 4 };
 
 	private Set<Boolean> setBool = new HashSet<>(asList(new Boolean[] { Boolean.TRUE, Boolean.FALSE }));
-	private Set<Integer> setInteger = new HashSet<>(asList(new Integer[] { 1, 2 }));
+	private Set<Integer> setInteger = new LinkedHashSet<>(asList(new Integer[] { 1, 2 }));
 	
 }
