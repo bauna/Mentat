@@ -29,6 +29,9 @@ install z3 jar in lein repo:
 
 - execute: lein localrepo install <location of com.microsoft.z3.jar> com.microsoft/z3 4.3.2.Uecceb0ac
 
+mvn deploy:deploy-file -DgroupId=com.microsoft -DartifactId=z3 \
+  -Dversion=4.3.2.06a4a3599 -Dpackaging=jar -Dfile=com.microsoft.z3.jar \
+  -Durl=file:repo
 
 
 (declare-datatypes (T) ((Stack (List T)))))
