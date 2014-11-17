@@ -19,6 +19,11 @@
                         (require '[dorothy.core :as d])
                         (require '[mentat.graph :as g])
                         (require '[mentat.selDSL :as s]))}
-  :jvm-opts [~(str "-Djava.library.path=native/" 
+  :jvm-opts ["-XX:+CMSClassUnloadingEnabled"
+             "-XX:+UseParNewGC"
+             "-XX:+UseConcMarkSweepGC"
+             "-XX:+CMSParallelRemarkEnabled"
+             "-XX:+HeapDumpOnOutOfMemoryError"
+             ~(str "-Djava.library.path=native/"
                    (. System getProperty "path.separator") 
                    (. System getProperty "java.library.path"))])
