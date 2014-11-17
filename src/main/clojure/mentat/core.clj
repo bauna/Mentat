@@ -112,4 +112,4 @@
 (defn all-method-infos
   "generates all method-infos"
   [methods]
-  (vec (filter #(not (nil? %)) (map method-info methods))))
+  (filterv #(not (nil? %)) (map method-info methods)))
