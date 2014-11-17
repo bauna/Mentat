@@ -19,7 +19,6 @@
                         (require '[dorothy.core :as d])
                         (require '[mentat.graph :as g])
                         (require '[mentat.selDSL :as s]))}
-  :dev-dependencied [[no-man-is-an-island/lein-eclipse "2.0.0"]]
   :jvm-opts [~(str "-Djava.library.path=native/" 
                    (. System getProperty "path.separator") 
                    (. System getProperty "java.library.path"))])
