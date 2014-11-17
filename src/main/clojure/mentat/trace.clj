@@ -29,7 +29,7 @@
   "invoke a object instance method if it throws an exception returns false or allows to specify a error value"
   ([o ^Method method params] (invoke-method o method params false))
   ([o ^Method method params error-result]
-    (println "will exec: " (.toString method))
+    ;(println "will exec: " (.toString method))
     (let [fut (future (try 
         (.invoke method o (to-array params))
         true
@@ -39,10 +39,11 @@
 (defn check-invariant 
   "checks whethet the invariant of the class is valid or not"
   [instance inv-fn fields]
+  (inv-fn (c/get-field-values instance fields)))
   ;(println "check-invariant: " (c/get-field-values instance fields))
-  (let [r (inv-fn (c/get-field-values instance fields))]
-    (println "check.inv: " r)
-    r))
+  ;(let [r (inv-fn (c/get-field-values instance fields))]
+  ;  (println "check.inv: " r)
+  ;  r))
 
 (defn enabled? 
   "checks is a method is enabled"
