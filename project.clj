@@ -9,7 +9,7 @@
   :repositories {"local" "file:repo"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.flatland/ordered "1.5.2"]
-                 [com.microsoft/z3 "4.3.2.06a4a3599"]
+                 [com.microsoft/z3 "4.3.2.ac21ffebd"]
                  [dorothy "0.0.4"]]
   :repl-options {:init (do (require '[clojure.java.io :as io])
                         (require '[mentat.selDSL :as ds])
