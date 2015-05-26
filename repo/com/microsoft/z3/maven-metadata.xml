@@ -3,10 +3,11 @@
   <groupId>com.microsoft</groupId>
   <artifactId>z3</artifactId>
   <versioning>
-    <release>4.3.2.06a4a3599</release>
+    <release>4.3.2.ac21ffebd</release>
     <versions>
       <version>4.3.2.06a4a3599</version>
+      <version>4.3.2.ac21ffebd</version>
     </versions>
-    <lastUpdated>20140730200853</lastUpdated>
+    <lastUpdated>20150328211117</lastUpdated>
   </versioning>
 </metadata>
