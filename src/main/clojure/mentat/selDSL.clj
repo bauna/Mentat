@@ -35,7 +35,7 @@
     (if (zero? n)
       [nil script]
       (let [[type & params] (first script)]
-        (println "type: " type " params: " params)
+        ;(println "type: " type " params: " params)
         (cond
           (= ::random type) [nil (rotate script)]
           (= ::while type)
@@ -51,7 +51,7 @@
     (fn [instance pres]
       (let [[method-name new-script] (choose-method instance fields @script)]
         (do
-          (println "method-name: " method-name " new-script:" new-script)
+          ;(println "method-name: " method-name " new-script:" new-script)
           (reset! script new-script)
           (if-let [sel (and method-name (seq (filter #(and (second %) (= method-name (-> % first :name))) pres)))]
             (first sel)
