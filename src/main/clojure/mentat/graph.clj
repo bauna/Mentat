@@ -44,9 +44,11 @@
 (def ^:dynamic *max-steps* 100)
 
 (defn build-dot-file
-  ([traces] (build-dot-file *max-steps* traces))
-  ([max-steps traces] (let [transitions (build-finite-state-machine max-steps traces)]
-     (d/digraph (into [{:rankdir "LR"} [:start {:shape "doublecircle"}]]
-                      (map (fn [[transition labels :as _]]
-                             (conj transition (if (empty? labels) {} {:label (s/join "\\n" labels)})))
-                           transitions))))))
+  ([traces]
+    (build-dot-file *max-steps* traces))
+  ([max-steps traces]
+    (let [transitions (build-finite-state-machine max-steps traces)]
+      (d/digraph (into [{:rankdir "LR"} [:start {:shape "doublecircle"}]]
+                       (map (fn [[transition labels :as _]]
+                              (conj transition (if (empty? labels) {} {:label (s/join "\\n" labels)})))
+                            transitions))))))
