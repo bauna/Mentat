@@ -48,11 +48,11 @@
   (let [fields (c/get-all-fields clazz)
         keys (map #(-> % .getName keyword) fields)
         script (atom (read-config-file keys config-file))]
-    (fn [instance pres]
+    (fn [instance method-infos]
       (let [[method-name new-script] (choose-method instance fields @script)]
         (do
           ;(println "method-name: " method-name " new-script:" new-script)
           (reset! script new-script)
-          (if-let [sel (and method-name (seq (filter #(and (second %) (= method-name (-> % first :name))) pres)))]
+          (if-let [sel (and method-name (seq (filter #(= method-name (-> % first :name)) method-infos)))]
             (first sel)
-            (t/random-sel instance pres)))))))
+            (t/random-sel instance method-infos)))))))
