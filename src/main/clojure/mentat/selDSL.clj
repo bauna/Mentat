@@ -53,6 +53,6 @@
         (do
           ;(println "method-name: " method-name " new-script:" new-script)
           (reset! script new-script)
-          (if-let [sel (and method-name (seq (filter #(= method-name (-> % first :name)) method-infos)))]
+          (if-let [sel (and method-name (seq (filter #(= method-name (:name %)) method-infos)))]
             (first sel)
             (t/random-sel instance method-infos)))))))
