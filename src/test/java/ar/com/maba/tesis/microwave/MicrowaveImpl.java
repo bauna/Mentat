@@ -4,12 +4,11 @@ import ar.com.maba.tesis.preconditions.ClassDefinition;
 import ar.com.maba.tesis.preconditions.Pre;
 
 @ClassDefinition(
-        builder = "(new ar.com.maba.tesis.microwave.MicrowaveImpl)",
-        invariant = "(and (==> on (not doorOpened)) " +
-                         "(==> on (and (> power 0) (> time 0))) " +
-                         "(==> (not on) (= power 0)))")
+    builder = "(new ar.com.maba.tesis.microwave.MicrowaveImpl)",
+    invariant = "(and (==> on (not doorOpened)) " +
+                     "(==> on (and (> power 0) (> time 0))) " +
+                     "(==> (not on) (= power 0)))")
 public class MicrowaveImpl implements Microwave {
-	
 	private static Integer DEFAULT_TIME = 30;
 	private static Integer DEFAULT_POWER = 900;
 	
@@ -63,7 +62,6 @@ public class MicrowaveImpl implements Microwave {
 	@Pre("(not doorOpened)")
 	public void openDoor() {
 		if (doorOpened) {
-			System.out.println("openDoor()");
 			throw new IllegalStateException();
 		}
 		doorOpened = true;
@@ -75,7 +73,6 @@ public class MicrowaveImpl implements Microwave {
 	@Pre("(doorOpened)")
 	public void closeDoor() {
 		if (!doorOpened) {
-			System.out.println("closeDoor()");
 			throw new IllegalStateException();
 		}
 		doorOpened = false;
