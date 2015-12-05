@@ -5,13 +5,19 @@
             [flatland.ordered.map :only (ordered-map) :as om]
             [clojure.string :only (join) :as s]
             [dorothy.core :as d])
-  (:import (java.lang.reflect Method Modifier Field)))
+  (:import
+    (java.lang.reflect Method Modifier Field)
+    (ar.com.maba.tesis.preconditions Pre ClassDefinition)))
 
 (defn ^String method-label
   "build a string representation for a method"
   [^Method m]
-  (if m (str (.getName m) 
-            "(" (s/join ", " (map #(.getSimpleName %) (seq (.getParameterTypes m)))) ")")))
+  (if m
+    (let [name (.name (.getAnnotation m Pre))]
+      (if (empty? name)
+        (str (.getName m)
+            "(" (s/join ", " (map #(.getSimpleName %) (seq (.getParameterTypes m)))) ")")
+        name))))
 
 (defn- failed? 
   [pre] 
