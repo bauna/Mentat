@@ -25,6 +25,12 @@
 ; mostramos que 5 pasos de la traza
 (show-trace (take 5 trace1))
 
+;Generamos el EPA
+(def epa (g/build-dot-file 100 [trace1]))
+
+;Mostramo el EPA
+(-> epa d/dot d/show!)
+
 (def trace2 (t/trace-gen MicrowaveImpl t/random-sel))
 ; mostramos que 5 pasos de la traza
 (show-trace (take 5 trace2))
