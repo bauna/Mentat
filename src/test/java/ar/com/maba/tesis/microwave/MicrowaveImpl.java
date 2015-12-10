@@ -18,19 +18,19 @@ public class MicrowaveImpl implements Microwave {
 	private Integer time = 0;
 
 	@Override
-	@Pre(value = "(and (not doorOpened) (not on))", name="start")
+	@Pre(value = "(and (not doorOpened) (not on))")
 	public void start() {
 		start(DEFAULT_TIME, DEFAULT_POWER);
 	}
 
 	@Override
-	@Pre(value = "(and (not doorOpened) (not on) (> p0 0))", name="start1")
+	@Pre(value = "(and (not doorOpened) (not on) (> p0 0))")
 	public void start(Integer time) {
 		start(time, DEFAULT_POWER);
 	}
 
 	@Override
-	@Pre(value = "(and (not doorOpened) (not on) (> p0 0) (> p1 0))", name="start2")
+	@Pre(value = "(and (not doorOpened) (not on) (> p0 0) (> p1 0))")
 	public void start(Integer time, Integer power) {
 		if (doorOpened) {
 			throw new IllegalStateException("cannot start with door open");
