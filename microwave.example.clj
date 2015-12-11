@@ -26,7 +26,7 @@
 (show-trace (take 5 trace1))
 
 ;Generamos el EPA
-(def epa (g/build-dot-file 100 [trace1]))
+(def epa (g/build-dot-file 50 [trace1]))
 
 ;Mostramo el EPA
 (-> epa d/dot d/show!)
@@ -36,7 +36,7 @@
 (show-trace (take 5 trace2))
 
 ;Generamos el EPA
-(def epa (g/build-dot-file 100 [trace1 trace2]))
+(def epa (g/build-dot-file 50 [trace1 trace2]))
 
 ;Mostramo el EPA
 (-> epa d/dot d/show!)
