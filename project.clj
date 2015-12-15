@@ -7,7 +7,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories {"local" "file:repo"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0-RC3"]
                  [org.flatland/ordered "1.5.2"]
                  [com.microsoft/z3 "4.3.2.ac21ffebd"]
                  [dorothy "0.0.4"]]
